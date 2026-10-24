@@ -206,6 +206,18 @@ select:disabled{opacity:.55}
 #public-preview{max-width:1080px;margin:20px auto;padding:0 20px}
 #public-preview h2{margin:10px 0}
 #public-preview .preview-links{display:flex;flex-wrap:wrap;gap:12px}
+
+/* Datenverwaltung 3.0 */
+.data-admin{max-width:1180px;margin:20px auto 0;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.data-admin[hidden]{display:none}.data-admin h2{margin-bottom:8px}.admin-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.admin-actions button,.admin-actions label{border:1px solid var(--line-strong);background:var(--bg);color:var(--ink);border-radius:8px;padding:10px 12px;cursor:pointer;font:inherit}
+.admin-counters{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:16px 0}
+.admin-counter{padding:12px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.admin-counter b{display:block;font-size:22px}.admin-counter span{color:var(--muted);font-size:13px}
+.admin-table{max-height:380px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.admin-table th,.admin-table td{padding:9px;border-bottom:1px solid var(--line);font-size:14px;text-align:left}
+.admin-table thead{position:sticky;top:0;background:var(--surface)}
+.admin-state{color:var(--muted);font-size:13px}.admin-error{color:#d57443;font-weight:600}
 </style>
 </head>
 <body>
@@ -236,6 +248,20 @@ select:disabled{opacity:.55}
   <button id="logout" type="button">Abmelden</button>
   <small id="local-info">Lokale Speicherung mit IndexedDB. Import ohne Freigabe gesperrt; ausschließlich mitgelieferte Testdaten verwenden.</small>
 </section></div>
+<section id="data-admin" class="data-admin" hidden aria-labelledby="admin-title">
+  <h2 id="admin-title">Datenverwaltung · Version 3.0</h2>
+  <p class="sec-sub">Prüfe je Mannschaft die Datenabdeckung. Ein manuell importierter Kader wird ausschließlich in diesem Browser gespeichert.</p>
+  <div class="admin-counters" id="admin-counters" aria-live="polite"></div>
+  <div class="admin-actions">
+    <button id="admin-toggle" type="button" aria-expanded="false">Mannschaften anzeigen</button>
+    <button id="admin-template" type="button">JSON-Vorlage für Reutlingen herunterladen</button>
+    <label>Spielerstatistik importieren <input id="admin-import" type="file" accept=".json,application/json" hidden></label>
+  </div>
+  <p id="admin-info" class="admin-state" role="status" aria-live="polite">Online-Erfassung weiterhin gesperrt, bis Nutzungsbedingungen geklärt sind. Nur zulässig bereitgestellte Statistikdateien verwenden.</p>
+  <div id="admin-detail" hidden>
+    <div class="admin-table"><table><thead><tr><th>Team</th><th>Liga</th><th>Teamstatistik</th><th>Spieler</th><th>Quelle / Zustand</th></tr></thead><tbody id="admin-teams"></tbody></table></div>
+  </div>
+</section>
 <header class="top">
   <div class="wrap top-inner">
     <div class="brand">
@@ -771,11 +797,11 @@ function validateDataset(d){
  return keys.length;
 }
 async function activate(){
- $('auth-wall').hidden=true;$('public-preview').hidden=true;$('app-shell').hidden=false;
+ $('auth-wall').hidden=true;$('public-preview').hidden=true;$('app-shell').hidden=false;$('data-admin').hidden=false;
  try{
   let stored=await localGet('dataset');
   if(!stored){stored=await ladeDaten(false);validateDataset(stored);await localPut('dataset',stored);}
-  validateDataset(stored);uebernehmen(stored); $('local-stat').textContent=`${Object.keys(stored.teams).length} Teams · lokal: ${fmtZeit(stored.stand)}`;
+  validateDataset(stored);uebernehmen(stored); renderAdmin(); $('local-stat').textContent=`${Object.keys(stored.teams).length} Teams · lokal: ${fmtZeit(stored.stand)}`;
  }catch(e){$('sync').textContent='Daten konnten nicht geladen werden: '+e.message;}
 }
 const encode=new TextEncoder();
@@ -800,7 +826,7 @@ async function syncDataset(){
   const d=await ladeDaten(true);const count=validateDataset(d);
   const current=await localGet('dataset');
   if(current&&Date.parse(d.stand)<Date.parse(current.stand))throw new Error('Die veröffentlichte Version ist älter als die lokale Version. Keine Überschreibung.');
-  await localPut('dataset',d);uebernehmen(d);
+  await localPut('dataset',d);uebernehmen(d);renderAdmin();
   $('local-stat').textContent=`${count} Teams · lokal: ${fmtZeit(d.stand)}`;
   $('local-info').textContent=current&&current.stand===d.stand?'Keine neuere Version vorhanden.':'Veröffentlichte Daten wurden geprüft und lokal gespeichert.';
  }catch(e){$('local-info').textContent='Aktualisierung fehlgeschlagen: '+e.message;}finally{b.disabled=false;}
@@ -815,10 +841,87 @@ $('export-json').addEventListener('click',async()=>{
 $('import-json').addEventListener('change',async e=>{
  const f=e.target.files?.[0];if(!f)return;
  try{if(f.size>20*1024*1024)throw new Error('Maximal 20 MB erlaubt.');const d=JSON.parse(await f.text());const n=validateDataset(d);
- await localPut('dataset',d);uebernehmen(d);$('local-stat').textContent=`${n} Teams · lokal: ${fmtZeit(d.stand)}`;
+ await localPut('dataset',d);uebernehmen(d);renderAdmin();$('local-stat').textContent=`${n} Teams · lokal: ${fmtZeit(d.stand)}`;
  $('local-info').textContent='Lokaler JSON-Import erfolgreich.';
  }catch(err){$('local-info').textContent='Importfehler: '+err.message;}e.target.value='';
 });
+
+/* ---- Datenverwaltung 3.0: kein Netzabruf, nur lokale Importdateien ---- */
+function adminStatusFor(id){
+ const d=DATA || {}, ps=d.spieler?.[id], team=d.teams?.[id] || {};
+ const synthetic=Boolean(team.synthetic || d.testdaten || d.synthetic || (d.syntheticTeams||[]).map(String).includes(String(id)));
+ return {count:Array.isArray(ps)?ps.length:0,synthetic};
+}
+function renderAdmin(){
+ if(!DATA || !DATA.teams)return;
+ const ids=Object.keys(DATA.teams);
+ const present=ids.filter(id=>adminStatusFor(id).count>0);
+ const test=ids.filter(id=>adminStatusFor(id).synthetic);
+ const games=Array.isArray(DATA.spiele)?DATA.spiele.length:0;
+ const countPlayer=ids.reduce((n,id)=>n+adminStatusFor(id).count,0);
+ const counters=[['Mannschaften',ids.length],['Mit Spielerwerten',present.length],['Ohne Spielerwerte',ids.length-present.length],['Spieler-Einträge',countPlayer],['Spiele',games],['Testkennzeichen',test.length]];
+ $('admin-counters').innerHTML=counters.map(([title,value])=>'<div class="admin-counter"><b>'+value+'</b><span>'+title+'</span></div>').join('');
+ const rows=ids.sort((a,b)=>DATA.teams[a].n.localeCompare(DATA.teams[b].n,'de'));
+ $('admin-teams').innerHTML=rows.map(id=>{
+   const t=DATA.teams[id],status=adminStatusFor(id),known=Array.isArray(DATA.teamstat[id])&&DATA.teamstat[id].length>=17;
+   const league=DATA.ligen[t.l]?.name||t.l||'–';
+   const last=t.kaderStand||'–';
+   return '<tr><td>'+escapeHtml(t.n)+'</td><td>'+escapeHtml(league)+'</td><td>'+(known?'vorhanden':'fehlt')+'</td><td>'+(status.count?status.count+' Spieler':'fehlen')+'</td><td>'+(status.synthetic?'SYNTHE­TISCH / nur Test':escapeHtml(last))+'</td></tr>';
+ }).join('');
+}
+$('admin-toggle').addEventListener('click',()=>{
+ const detail=$('admin-detail');detail.hidden=!detail.hidden;$('admin-toggle').setAttribute('aria-expanded',String(!detail.hidden));
+ $('admin-toggle').textContent=detail.hidden?'Mannschaften anzeigen':'Mannschaften ausblenden';
+});
+function downloadJson(name,obj){
+ const u=URL.createObjectURL(new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}));
+ const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2500);
+}
+$('admin-template').addEventListener('click',()=>downloadJson('reutlingen-spielerimport-vorlage.json',{
+ format:'coaches-team-players-v1',teamId:591,quelle:'',stand:'',
+ hinweis:'Die Spieler-Liste erst mit nachweisbar verfügbaren echten Werten ergänzen. Leere Vorlage darf nicht importiert werden.',
+ spieler:[]
+}));
+function validateTeamImport(obj,data){
+ if(!obj||obj.format!=='coaches-team-players-v1')throw new Error('Format coaches-team-players-v1 erforderlich.');
+ const id=String(obj.teamId);
+ if(!/^\d+$/.test(id)||!data.teams[id])throw new Error('Unbekannte Team-ID.');
+ if(!Array.isArray(obj.spieler)||obj.spieler.length<1||obj.spieler.length>40)throw new Error('1 bis 40 Spieler erforderlich.');
+ if(!obj.quelle||typeof obj.quelle!=='string'||obj.quelle.length<8)throw new Error('Nachvollziehbare Quelle erforderlich.');
+ if(!obj.stand||Number.isNaN(Date.parse(obj.stand)))throw new Error('Gültiger Datenstand erforderlich (YYYY-MM-DD).');
+ if(obj.synthetic===true || obj.testdaten===true)throw new Error('Synthetische Daten dürfen nicht als reale Spielerstatistiken importiert werden.');
+ const used=new Set();
+ for(const row of obj.spieler){
+  if(!Array.isArray(row)||row.length!==22)throw new Error('Spielerzeile benötigt exakt 22 Felder.');
+  if(!Number.isInteger(row[0])||row[0]<0||row[0]>999||typeof row[1]!=='string'||!row[1].includes('|')||typeof row[2]!=='string')throw new Error('Ungültige Spieler-Identität.');
+  const key=row[0]+':'+row[1];if(used.has(key))throw new Error('Doppelter Spieler: '+row[1]);used.add(key);
+  if(!Number.isInteger(row[3])||row[3]<1||row[3]>100||!/^\d+:\d{2}$/.test(row[4]))throw new Error('Ungültige Einsätze oder Spielminuten.');
+  for(let i=5;i<row.length;i++)if(!Number.isFinite(row[i])||!Number.isInteger(row[i])||row[i]< (i===21?-10000:0))throw new Error('Ungültiger Statistikwert in Spalte '+i);
+  if(row[5]>row[6]||row[7]>row[8]||row[9]>row[10])throw new Error('Trefferzahl größer als Versuche.');
+  if(row[11]!==2*row[5]+3*row[7]+row[9])throw new Error('Punktesumme einer Spielerzeile passt nicht zu den Würfen.');
+ }
+ return id;
+}
+$('admin-import').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+  if(file.size>2*1024*1024)throw new Error('Datei größer als 2 MB.');
+  const patch=JSON.parse(await file.text());
+  const current=await localGet('dataset');if(!current)throw new Error('Kein lokaler Datenbestand geladen.');
+  const id=validateTeamImport(patch,current);
+  const copy=structuredClone(current);
+  copy.spieler[id]=patch.spieler;
+  copy.teams[id].kaderStand=patch.stand;
+  copy.teams[id].kaderGeladen=new Date().toISOString();
+  copy.teams[id].importQuelle=patch.quelle;
+  copy.teams[id].synthetic=false;
+  validateDataset(copy);
+  await localPut('dataset',copy);uebernehmen(copy);renderAdmin();
+  $('admin-info').textContent=patch.spieler.length+' Spieler für '+copy.teams[id].n+' lokal übernommen (Quelle: '+patch.quelle+'). Andere Teams unverändert.';
+ }catch(error){$('admin-info').textContent='Import abgelehnt: '+error.message;}
+ e.target.value='';
+});
+
 // Newly sourced online collection can only start via an authenticated backend and written permission.
 // Deliberately disabled in this demonstration, regardless of any client-side setting.
 $('central-start').disabled=true;
