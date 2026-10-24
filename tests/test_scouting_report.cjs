@@ -1,0 +1,3 @@
+const assert=require('assert');const fs=require('fs');const mod=require('../docs/scouting-report.js');const d=JSON.parse(fs.readFileSync(require('path').join(__dirname,'../docs/daten/daten.json')));
+let x=mod.build(d,559,591);assert.equal(x.own.n,'BBC Coburg');assert.equal(x.opp.c,'TRR');assert.ok(x.ownM.ppg>0&&x.oppM.ppg>0);assert.ok(x.scoreOwn>0);assert.ok(x.priorities.length>0);assert.ok(x.warnings.some(s=>s.includes('Stichprobe')));assert.ok(mod.metrics(Array(17).fill(0),{minus:0,plus:0,g:0}).efg===null);assert.throws(()=>mod.build(d,999,591));
+console.log('Scouting-Report: 7 Assertions erfolgreich');

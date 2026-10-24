@@ -219,6 +219,27 @@ select:disabled{opacity:.55}
 .admin-table thead{position:sticky;top:0;background:var(--surface)}
 .admin-state{color:var(--muted);font-size:13px}.admin-error{color:#d57443;font-weight:600}
 .csv-import-box{border:1px solid var(--line-strong);border-radius:12px;padding:14px;margin:14px 0}.csv-import-box h3{margin:0 0 8px}.csv-import-box input,.csv-import-box select{font:inherit;max-width:100%;padding:7px;background:var(--bg);color:var(--ink);border:1px solid var(--line-strong);border-radius:7px}.csv-import-box button{border:1px solid var(--line-strong);background:var(--bg);color:var(--ink);padding:10px;border-radius:8px;cursor:pointer}.csv-import-box .csv-confirm{display:block;margin:13px 0}.csv-import-box .admin-table{max-height:300px}
+
+/* Version 3.2 Scouting Report */
+.scout-launch{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 22px}
+.scout-launch button,.scout-print{background:var(--own);color:#fff;border:0;border-radius:8px;padding:11px 16px;cursor:pointer;font-weight:600}
+.scout-launch span,.scout-small{font-size:13px;color:var(--muted)}
+.scouting-report{padding:20px;margin:0 0 28px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.scouting-report[hidden]{display:none}
+.scout-header{display:flex;align-items:start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.scout-header h2{font-size:26px}.scout-header p{margin:4px 0;color:var(--muted)}
+.scout-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:16px 0 22px}
+.scout-kpis>div{border:1px solid var(--line);border-radius:9px;padding:11px;background:var(--bg)}
+.scout-kpis small{display:block;color:var(--muted);font-size:12px}.scout-kpis strong{font-size:20px;font-variant-numeric:tabular-nums}
+.scout-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:24px;margin:18px 0 24px}
+.scouting-report h3{font-size:20px;margin:18px 0 10px}
+.scout-table{border-collapse:collapse;width:100%;font-size:14px}.scout-table th,.scout-table td{padding:8px 5px;border-bottom:1px solid var(--line);text-align:right}.scout-table th:first-child,.scout-table td:first-child{text-align:left}.scout-table small{color:var(--muted)}
+.scout-tactics{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px;padding:0;list-style:none}
+.scout-tactics li{border:1px solid var(--line);border-left:3px solid var(--opp);padding:12px;border-radius:8px}
+.scout-tactics strong,.scout-tactics span{display:block}.scout-tactics span{color:var(--muted);font-size:13px;margin-top:3px}.scout-tactics p{margin:7px 0 0}
+.scout-caveats{font-size:13px;color:var(--muted)}
+@media print{@page{size:A4;margin:12mm}body{background:white!important;color:#161616!important}body>*:not(main){display:none!important}main>*:not(#analysis){display:none!important}#analysis>*:not(#scouting-report){display:none!important}#analysis,#scouting-report{display:block!important;margin:0!important;padding:0!important;border:0!important;color:#161616!important;background:#fff!important}#scout-print{display:none!important}.scout-kpis>div,.scout-tactics li{background:white!important;break-inside:avoid}.scout-cols{grid-template-columns:1fr 1fr!important}.scout-tactics{grid-template-columns:repeat(3,1fr)!important}.scout-header h2{font-size:20px!important}.scouting-report h3{font-size:15px!important}.scout-kpis strong{font-size:15px!important}.scout-table{font-size:11px!important}.scout-caveats{font-size:10px!important}}
+
 </style>
 </head>
 <body>
@@ -346,6 +367,9 @@ select:disabled{opacity:.55}
   <section class="analysis" id="analysis" aria-labelledby="h-analysis" hidden>
     <h2 id="h-analysis">Gegneranalyse</h2>
     <div class="matchup" id="matchup"></div>
+
+    <div class="scout-launch"><button type="button" id="scout-create">Scouting-Report erstellen</button><span>Matchup · Schlüsselspieler · Taktische Prioritäten · PDF-Druck</span></div>
+    <section id="scouting-report" class="scouting-report" hidden aria-label="Scouting-Report"><div id="scout-content"></div></section>
 
     <div class="analysis-grid" id="analysis-grid">
       <section aria-labelledby="h-cmp">
@@ -979,5 +1003,7 @@ $('csv-save').addEventListener('click',async()=>{
 $('central-start').disabled=true;
 if(sessionStorage.getItem('coach-unlocked')==='1')activate();
 </script>
+<script src="scouting-report.js"></script>
+<script src="scouting-ui.js"></script>
 </body>
 </html>
