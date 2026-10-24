@@ -1,0 +1,10 @@
+{
+  "status": "OK",
+  "teams": 47,
+  "spieler_teams": 10,
+  "spiele": 185,
+  "errors": [],
+  "warnings": [
+    "Spielerstatistiken nur für 10 von 47 Teams"
+  ]
+}

@@ -30,3 +30,18 @@ Lokaler Test: `python -m http.server 8000 --directory docs`; dann `http://localh
 Eine auf GitHub Pages veröffentlichte JSON ist **öffentlich abrufbar, auch wenn die Webseite eine lokale Passphrase verlangt**. Die Passphrase ist mit Salt+PBKDF2 lokal im Browser gespeichert, schützt aber weder den öffentlichen Download noch vor Zugriff über Browser-Entwicklertools. Die Daten werden nicht verschlüsselt abgelegt. Zur echten Einschränkung der Analyse- und Datenzugriffe ist ein Backend mit Identity Provider, Autorisierung und geschütztem API/Storage nötig.
 
 **Für vertrauliche oder nur privat lizenzierte Rohdaten dürfen Daten nicht im öffentlichen `docs`-Verzeichnis liegen.** Bis das geklärt ist, nur freigegebene Inhalte veröffentlichen.
+
+## Offline-Datenimport 2.0 – vor Datenfreigabe
+
+**Kein Live-Abruf wird aktiviert.** Die produktive Datei `docs/daten/daten.json` bleibt beim Offline-Test unverändert. Die bisherigen (teilweise realen) Startdaten werden nicht durch erfundene Spielerstatistiken ersetzt. `tests/fixtures/` ist **nicht** Bestandteil der veröffentlichten Website.
+
+```bash
+python -m unittest discover -s tests -v
+python scripts/validate_data.py docs/daten/daten.json --report /tmp/validierung.json
+python scripts/create_test_data.py
+python scripts/validate_data.py tests/fixtures/offline-testdaten.json --allow-synthetic
+```
+
+Der mitgelieferte Testdatensatz liegt unter `tests/fixtures/offline-testdaten.json`; er wird nicht nach GitHub Pages ausgeliefert. Der Generator ergänzt ausschließlich fehlende Teamkader durch eindeutig als `TEST` gekennzeichnete synthetische Spieler (festgelegter Seed, reproduzierbar). Bereits vorhandene Spielerstatistiken bleiben unangetastet. Der Testdatensatz enthält ein dauerhaftes `testdaten: true`-Merkmal. Standardmäßig lehnt die produktive Validierung solche Datensätze ab; nur `--allow-synthetic` lässt sie für Offline-Prüfungen zu. **Nicht in `docs/daten/daten.json` übernehmen!**
+
+Der CI-Workflow `Offline-Import Tests (kein Live-Abruf)` prüft ohne Netzwerkabruf die Datenkonsistenz und Fehlerfälle. Das bisherige `einlesen.yml` bleibt weiterhin gesperrt, solange `ENABLE_LIVE_IMPORT` nicht ausdrücklich freigegeben wurde. Die Prüfung deckt u. a. Team-/Ligazuordnung, Tabellen, fehlende und doppelte Spieler, negative Werte, Spiel-IDs sowie Ergebnisse ab. Sie ist eine Struktur-/Plausibilitätsprüfung, kein Abgleich mit offiziellen Webseiten.
