@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coaches-Analyse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F4; --surface:#FFFFFF; --ink:#13202D; --muted:#596978; --line:#D4DBE2; --line-strong:#AEBAC6;
+  --own:#1C5BB0; --own-soft:#E0E9F6; --opp:#BF4511; --opp-soft:#FAE5D9;
+  --court:#12305A; --court-ink:#FFFFFF; --court-muted:rgba(255,255,255,.72); --court-own:#A3C6F7; --court-opp:#FFA675; --court-line:rgba(255,255,255,.13);
+  --focus:#1C5BB0;
+  --font-body:"Barlow","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --font-cond:"Barlow Condensed","Arial Narrow","Roboto Condensed","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D131A; --surface:#141D27; --ink:#E2E9F0; --muted:#93A3B2; --line:#25313D; --line-strong:#3A4957;
+    --own:#74A8EE; --own-soft:#172A42; --opp:#F2894F; --opp-soft:#3A2216;
+    --court:#0B2240; --court-line:rgba(255,255,255,.10); --focus:#74A8EE;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D131A; --surface:#141D27; --ink:#E2E9F0; --muted:#93A3B2; --line:#25313D; --line-strong:#3A4957;
+  --own:#74A8EE; --own-soft:#172A42; --opp:#F2894F; --opp-soft:#3A2216;
+  --court:#0B2240; --court-line:rgba(255,255,255,.10); --focus:#74A8EE;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
+a{color:var(--own)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* Kopf und Auswahl */
+.top{background:var(--surface);border-bottom:1px solid var(--line)}
+.top-inner{display:flex;flex-wrap:wrap;gap:16px 40px;align-items:flex-end;justify-content:space-between;padding-top:20px;padding-bottom:18px}
+.brand h1{font-family:var(--font-cond);font-weight:700;font-size:32px;line-height:1;margin:0;letter-spacing:-.01em}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:15px}
+.brand .proto{font-size:13px;margin-top:2px}
+.setup{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;flex:1 1 100%}
+.setup label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);font-weight:500}
+.setup .own-pick,.setup .opp-pick{grid-column:1 / -1}
+@media (min-width:720px){.setup{grid-template-columns:7.5rem 9.5rem minmax(0,1fr) minmax(0,1fr)}.setup .own-pick,.setup .opp-pick{grid-column:auto}}
+.setup .opp-pick select:not(:disabled){border-color:var(--opp)}
+select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line-strong);border-radius:8px;padding:9px 10px;width:100%;min-height:44px}
+
+/* Abschnitte */
+main{padding-top:28px;padding-bottom:28px}
+h2{font-family:var(--font-cond);font-weight:700;font-size:26px;line-height:1.1;margin:0}
+h3{font-family:var(--font-cond);font-weight:600;font-size:20px;line-height:1.15;margin:0}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.sec-head .src{font-size:13px;white-space:nowrap}
+.sec-sub{font-size:14px;color:var(--muted);margin:2px 0 0}
+.foot{font-size:13px;color:var(--muted);margin:10px 0 0}
+.overview{display:grid;grid-template-columns:minmax(0,1fr);gap:36px}
+@media (min-width:920px){.overview{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px}}
+
+/* Nächste Spiele */
+.games{list-style:none;margin:0;padding:0;border-bottom:1px solid var(--line)}
+.game{display:grid;grid-template-columns:5.4rem 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:14px 12px 14px 10px;cursor:pointer;min-height:64px}
+.game:hover{background:color-mix(in srgb,var(--opp-soft) 55%,transparent)}
+.game[aria-pressed="true"]{background:var(--opp-soft);box-shadow:inset 3px 0 0 var(--opp)}
+.g-date{font-family:var(--font-cond);font-size:17px;line-height:1.15;font-weight:600}
+.g-date span{display:block;font-family:var(--font-body);font-size:13px;font-weight:400;color:var(--muted)}
+.g-where{display:block;font-size:13px;color:var(--muted)}
+.g-opp{display:block;font-weight:600;line-height:1.25}
+.g-rank{font-size:13px;color:var(--muted);text-align:right;white-space:nowrap}
+.hint{font-size:13px;color:var(--muted);margin:10px 0 0}
+
+/* Tabelle */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%}
+.standings th{font-size:12px;font-weight:500;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--line-strong);white-space:nowrap}
+.standings td{font-size:15px;padding:0 8px;height:38px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.standings th:nth-child(2),.standings td:nth-child(2){text-align:left;width:100%}
+.standings td:first-child,.standings th:first-child{text-align:right;padding-left:6px;width:2.2rem}
+.standings tr.is-own td{background:var(--own-soft);font-weight:600}
+.standings tr.is-own td:first-child{box-shadow:inset 3px 0 0 var(--own)}
+.standings tr.is-opp td{background:var(--opp-soft);font-weight:600}
+.standings tr.is-opp td:first-child{box-shadow:inset 3px 0 0 var(--opp)}
+.team-btn{background:none;border:0;padding:8px 0;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:var(--line-strong);text-underline-offset:3px}
+.team-btn:hover{text-decoration-color:currentColor}
+.col-wide{display:none}
+@media (min-width:560px){.col-wide{display:table-cell}}
+.pos{color:var(--muted)}
+
+/* Matchup-Band */
+.analysis{margin-top:44px}
+.analysis > h2{margin-bottom:12px}
+.matchup{position:relative;overflow:hidden;background:var(--court);color:var(--court-ink);border-radius:18px;padding:26px 22px 22px}
+.mu-court{position:absolute;inset:0;pointer-events:none}
+.mu-court svg{width:100%;height:100%}
+.mu-grid{position:relative;display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:start}
+.mu-side.opp{text-align:right}
+.mu-code{display:block;font-family:var(--font-cond);font-weight:700;font-size:clamp(52px,14vw,112px);line-height:.88;letter-spacing:-.01em}
+.mu-side.own .mu-code{color:var(--court-own)}
+.mu-side.opp .mu-code{color:var(--court-opp)}
+.mu-name{display:block;font-weight:600;font-size:15px;line-height:1.25;margin-top:8px}
+.mu-rec{display:block;font-size:14px;color:var(--court-muted);margin-top:2px}
+.form{display:flex;gap:5px;margin-top:10px}
+.mu-side.opp .form{justify-content:flex-end}
+.dot{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--court-ink)}
+.dot.w{background:var(--court-ink)}
+.mu-center{text-align:center;padding-top:clamp(10px,3vw,30px)}
+.mu-vs{display:block;font-family:var(--font-cond);font-size:22px;font-weight:600;color:var(--court-muted)}
+.mu-when{display:block;font-family:var(--font-cond);font-size:18px;font-weight:600;margin-top:6px;white-space:nowrap}
+.mu-venue{display:block;font-size:13px;color:var(--court-muted)}
+.mu-h2h{position:relative;margin:18px 0 0;padding-top:12px;border-top:1px solid var(--court-line);font-size:14px;color:var(--court-muted)}
+@media (max-width:520px){
+  .mu-grid{grid-template-columns:1fr 1fr}
+  .mu-center{grid-column:1 / -1;grid-row:2;text-align:left;padding-top:4px;border-top:1px solid var(--court-line);margin-top:6px}
+  .mu-center .mu-vs{display:none}
+  .mu-when,.mu-venue{display:inline;margin:0}
+  .mu-when + .mu-venue::before{content:", "}
+}
+
+.analysis-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;margin-top:32px}
+@media (min-width:920px){.analysis-grid{grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:48px;align-items:start}}
+
+/* Vergleich */
+.cmp-legend{font-size:13px;color:var(--muted);margin:0 0 14px}
+.cmp-cols{display:grid;grid-template-columns:6rem 1fr 6rem;font-family:var(--font-cond);font-weight:700;font-size:20px;padding-bottom:6px;border-bottom:1px solid var(--line-strong)}
+.cmp-cols .o{color:var(--own)}
+.cmp-cols .g{color:var(--opp);text-align:right}
+.cmp-grp{font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--muted);margin:18px 0 0;padding-bottom:4px}
+.cmp-row{display:grid;grid-template-columns:6rem 1fr 6rem;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.cmp-val b{display:block;font-family:var(--font-cond);font-size:22px;font-weight:500;line-height:1.1;font-variant-numeric:tabular-nums}
+.cmp-val small{display:block;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.3}
+.cmp-val.g{text-align:right}
+.cmp-val.o.win b{color:var(--own);font-weight:700}
+.cmp-val.g.win b{color:var(--opp);font-weight:700}
+.cmp-mid{text-align:center;padding:0 10px;min-width:0}
+.cmp-label{font-size:14px;font-weight:500;line-height:1.25}
+.cmp-label em{font-style:normal;color:var(--muted);font-weight:400}
+.bars{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:6px}
+.half{height:6px;background:var(--line);border-radius:3px;display:flex;overflow:hidden}
+.half.l{justify-content:flex-end}
+.fill{height:100%;width:var(--w)}
+.fill.o{background:var(--own)} .fill.g{background:var(--opp)} .fill.n{background:var(--muted)}
+
+/* Top 5 */
+.leader-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:6px 28px}
+@media (min-width:600px){.leader-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.leader{padding-top:12px;margin-bottom:14px}
+.leader h3{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--line-strong)}
+.leader h3 span{font-family:var(--font-body);font-size:12px;font-weight:400;color:var(--muted)}
+.leader ol{list-style:none;margin:0;padding:0}
+.leader li{display:grid;grid-template-columns:1.4rem 1fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.lr{font-family:var(--font-cond);font-weight:600;color:var(--muted);font-size:16px}
+.lw{min-width:0}
+.ln{display:block;font-weight:600;font-size:15px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lm{display:block;font-size:12px;color:var(--muted);line-height:1.3}
+.lv{font-family:var(--font-cond);font-weight:600;font-size:22px;font-variant-numeric:tabular-nums}
+.leader li.first .lv{color:var(--opp);font-weight:700}
+.empty{border:1px dashed var(--line-strong);border-radius:10px;padding:18px;background:var(--surface)}
+.empty p{margin:0 0 8px}
+
+.foot-main{font-size:13px;color:var(--muted);padding-top:20px;padding-bottom:36px;border-top:1px solid var(--line)}
+.foot-main p{margin:0 0 6px;max-width:75ch}
+/* Ergänzungen */
+[hidden]{display:none !important}
+select:disabled{opacity:.55}
+.start{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 22px 8px;max-width:640px}
+.start h2{margin-bottom:6px}
+.start > p{margin:0 0 14px;color:var(--muted)}
+.steps{list-style:none;margin:0;padding:0;counter-reset:step}
+.steps li{counter-increment:step;display:grid;grid-template-columns:2.4rem 1fr;gap:4px 12px;padding:12px 0;border-top:1px solid var(--line)}
+.steps li::before{content:counter(step);grid-row:1 / span 2;font-family:var(--font-cond);font-weight:700;font-size:30px;line-height:1;color:var(--line-strong)}
+.steps b{font-weight:600}
+.steps span{color:var(--muted);font-size:15px}
+.steps li.active::before{color:var(--own)}
+.steps li.done::before{content:"✓";color:var(--muted)}
+.steps li.done b,.steps li.done span{color:var(--muted)}
+.placeholder{color:var(--muted);font-size:15px;margin:0;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mu-ask{display:block;font-size:15px;color:var(--court-muted);margin-top:8px;max-width:22ch;margin-left:auto}
+.brand .proto{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.refresh{font:inherit;font-size:13px;font-weight:600;color:var(--own);background:transparent;border:1px solid var(--own);border-radius:999px;padding:4px 14px;min-height:32px;cursor:pointer}
+.refresh:hover:not(:disabled){background:var(--own-soft)}
+.refresh:disabled{opacity:.5;cursor:progress}
+.sync{font-size:13px;color:var(--muted);margin:4px 0 0;min-height:1.2em;max-width:60ch}
+.warn{border-left:3px solid var(--opp);background:var(--opp-soft);padding:10px 12px;font-size:14px;margin:0 0 12px;border-radius:0 8px 8px 0}
+
+/* Local-first control panel */
+.panel-strip{display:flex;flex-wrap:wrap;gap:9px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;margin:18px auto 0}
+.panel-strip button,.panel-strip input,.auth-card button,.auth-card input{font:inherit;padding:9px 11px;border-radius:8px;border:1px solid var(--line-strong);background:var(--bg);color:var(--ink)}
+.panel-strip button,.auth-card button{cursor:pointer;background:var(--own-soft)}
+.panel-strip button:disabled{cursor:not-allowed;opacity:.55}
+.panel-strip small{color:var(--muted);flex-basis:100%}
+.auth-wall{max-width:560px;margin:45px auto;padding:30px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.auth-wall form{display:grid;gap:12px}
+.auth-wall input{width:100%}
+.auth-wall .warn{margin-top:14px}
+#app-shell[hidden],#auth-wall[hidden],#public-preview[hidden]{display:none!important}
+#public-preview{max-width:1080px;margin:20px auto;padding:0 20px}
+#public-preview h2{margin:10px 0}
+#public-preview .preview-links{display:flex;flex-wrap:wrap;gap:12px}
+</style>
+</head>
+<body>
+
+<section id="public-preview" aria-label="Öffentliche Informationen">
+  <h2>Basketball-Scouting · ProA / ProB</h2>
+  <p>Öffentlich zugängliche Ligainformationen und Quelllinks. Der lokale Analysebereich benötigt eine Anmeldung auf diesem Gerät.</p>
+  <p class="preview-links"><a href="https://www.2basketballbundesliga.de/tabelle-proa/" target="_blank" rel="noopener">ProA-Tabelle ↗</a><a href="https://www.2basketballbundesliga.de/tabelle-prob/" target="_blank" rel="noopener">ProB-Tabelle ↗</a><a href="https://www.2basketballbundesliga.de/spielplaene-prob/" target="_blank" rel="noopener">ProB-Spielplan ↗</a></p>
+</section>
+<section class="auth-wall" id="auth-wall" aria-labelledby="auth-title">
+  <h2 id="auth-title">Lokaler Analysebereich</h2>
+  <p>Die Analyse ist auf diesem Gerät durch eine lokale Passphrase gesperrt. Beim ersten Start wird die Passphrase festgelegt.</p>
+  <form id="auth-form">
+    <label for="auth-pass">Passphrase (mindestens 10 Zeichen)</label>
+    <input id="auth-pass" type="password" minlength="10" autocomplete="current-password" required>
+    <button type="submit" id="auth-submit">Analyse öffnen / Passphrase einrichten</button>
+    <p id="auth-status" role="status" aria-live="polite"></p>
+  </form>
+  <p class="warn"><strong>Wichtige Einschränkung:</strong> Dies ist keine echte serverseitige Benutzeranmeldung. GitHub Pages und öffentlich bereitgestellte JSON-Dateien sind für technisch versierte Besucher zugänglich. Keine vertraulichen oder lizenzpflichtigen Daten hier veröffentlichen. Für echte Benutzerkonten ist ein Authentifizierungs-Backend erforderlich.</p>
+</section>
+<div id="app-shell" hidden>
+<div class="wrap"><section class="panel-strip" aria-label="Datenspeicher und Import">
+  <strong>Lokaler Datenspeicher</strong><span id="local-stat" role="status">Lade …</span>
+  <button id="local-sync" type="button">Veröffentlichte Daten prüfen &amp; lokal aktualisieren</button>
+  <button id="central-start" type="button" disabled title="Erst nach Freigabe und Backend-Konfiguration möglich">Neue Online-Erfassung anstoßen</button>
+  <button id="export-json" type="button">Daten exportieren</button>
+  <label style="cursor:pointer">JSON importieren <input id="import-json" type="file" accept=".json,application/json" hidden></label>
+  <button id="logout" type="button">Abmelden</button>
+  <small id="local-info">Lokale Speicherung mit IndexedDB. Import ohne Freigabe gesperrt; ausschließlich mitgelieferte Testdaten verwenden.</small>
+</section></div>
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <h1>Coaches-Analyse</h1>
+      <p>Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p>
+      <p class="proto"><span id="datenstand">Daten werden geladen …</span><button id="refresh" class="refresh" type="button" disabled>Aktualisieren</button></p>
+      <p class="sync" id="sync" role="status" aria-live="polite"></p>
+    </div>
+    <div class="setup">
+      <label>Saison
+        <select id="season">
+          <option value="2026">2026/27</option>
+          <option disabled>2025/26 (folgt)</option>
+        </select>
+      </label>
+      <label>Liga
+        <select id="league" disabled>
+          <option value="" selected disabled>Liga wählen</option>
+          <option value="proa">ProA</option>
+          <option value="probn">ProB Nord</option>
+          <option value="probs">ProB Süd</option>
+        </select>
+      </label>
+      <label class="own-pick">Mein Team
+        <select id="own" disabled><option value="">Zuerst Liga wählen</option></select>
+      </label>
+      <label class="opp-pick">Gegner
+        <select id="opp" disabled><option value="">Zuerst eigenes Team wählen</option></select>
+      </label>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="start" id="start" aria-labelledby="h-start">
+    <h2 id="h-start">In drei Schritten zur Gegneranalyse</h2>
+    <p>Die Analyse füllt sich, sobald alle drei Angaben gemacht sind.</p>
+    <ol class="steps">
+      <li id="step1"><b>Liga wählen</b><span>ProA, ProB Nord oder ProB Süd</span></li>
+      <li id="step2"><b>Eigenes Team wählen</b><span>Danach erscheinen die nächsten drei Spiele und dein Team wird in der Tabelle markiert.</span></li>
+      <li id="step3"><b>Gegner wählen</b><span>Im Feld „Gegner“ oben, über eines der nächsten Spiele oder direkt in der Tabelle.</span></li>
+    </ol>
+  </section>
+
+  <div class="overview" id="overview" hidden>
+    <section aria-labelledby="h-next">
+      <div class="sec-head"><h2 id="h-next">Nächste Spiele</h2></div>
+      <div id="next-wrap"></div>
+    </section>
+
+    <section class="standings" aria-labelledby="h-table">
+      <div class="sec-head">
+        <h2 id="h-table">Tabelle</h2>
+        <a class="src" id="table-src" href="#" target="_blank" rel="noopener">Quelle öffnen</a>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr>
+            <th scope="col">Pl.</th><th scope="col">Team</th><th scope="col">Sp.</th><th scope="col">S–N</th><th scope="col">Pkt.</th><th scope="col">Diff.</th>
+            <th scope="col" class="col-wide">Heim</th><th scope="col" class="col-wide">Gast</th><th scope="col" class="col-wide">Serie</th>
+          </tr></thead>
+          <tbody id="table"></tbody>
+        </table>
+      </div>
+      <p class="foot" id="table-foot"></p>
+    </section>
+  </div>
+
+  <section class="analysis" id="analysis" aria-labelledby="h-analysis" hidden>
+    <h2 id="h-analysis">Gegneranalyse</h2>
+    <div class="matchup" id="matchup"></div>
+
+    <div class="analysis-grid" id="analysis-grid">
+      <section aria-labelledby="h-cmp">
+        <div class="sec-head">
+          <div>
+            <h2 id="h-cmp">Durchschnittswerte im Vergleich</h2>
+            <p class="sec-sub" id="cmp-sub"></p>
+          </div>
+          <a class="src" id="cmp-src" href="#" target="_blank" rel="noopener">Quelle öffnen</a>
+        </div>
+        <p class="cmp-legend" id="cmp-legend"></p>
+        <div id="compare"></div>
+      </section>
+
+      <section aria-labelledby="h-lead">
+        <div class="sec-head">
+          <div>
+            <h2 id="h-lead">Top 5 des Gegners</h2>
+            <p class="sec-sub" id="lead-sub"></p>
+          </div>
+          <a class="src" id="lead-src" href="#" target="_blank" rel="noopener">Quelle öffnen</a>
+        </div>
+        <div id="leaders"></div>
+        <p class="foot" id="lead-note"></p>
+      </section>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap foot-main">
+  <p id="quelle-info"></p>
+  <p id="coverage"></p>
+  <p id="hinweise"></p>
+</footer>
+
+</div>
+<script>
+/* ---------- Konfiguration ---------- */
+function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const KONFIG = {
+  /* Datei, die das Einlese-Skript schreibt (liegt neben dieser Seite) */
+  datenUrl: 'daten/daten.json',
+  /* Adresse des Start-Dienstes für den Button (Cloudflare Worker, siehe README).
+     Leer lassen: Der Button lädt dann nur den neuesten automatisch eingelesenen Stand. */
+  startUrl: '',
+  /* So lange wartet die App höchstens auf neue Daten nach dem Start des Einlesens */
+  maxWartenMin: 8
+};
+
+/* ---------- Daten (werden aus daten.json geladen) ---------- */
+let DATA = null, TEAMS = {}, LEAGUES = {}, TS = {}, GAMES_RAW = [], PLAYERS = {}, KADER_STAND = {};
+
+/* ---------- Aufbereitung ---------- */
+let STAND = new Date();
+const nf1 = new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+const f1 = x => nf1.format(x);
+const pct = x => isFinite(x) ? nf1.format(x*100) + '\u202F%' : '–';
+const signed = x => (x > 0.04 ? '+' : x < -0.04 ? '−' : '±') + nf1.format(Math.abs(x));
+const signedInt = x => (x > 0 ? '+' : x < 0 ? '−' : '±') + Math.abs(x);
+const pad = n => String(n).padStart(2,'0');
+const WD = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const parseD = s => { const [d,t] = s.split('T'); const [y,m,da] = d.split('-').map(Number); const [h,mi] = t.split(':').map(Number); return new Date(y,m-1,da,h,mi); };
+const fmtDay = dt => `${WD[dt.getDay()]}, ${pad(dt.getDate())}.${pad(dt.getMonth()+1)}.`;
+const fmtTime = dt => `${pad(dt.getHours())}:${pad(dt.getMinutes())} Uhr`;
+const kaderUrl = id => `https://www.2basketballbundesliga.de/teams/kader/?id=${id}`;
+
+let ROW = {}, GAMES = [], D = {};
+const idsOf = lk => LEAGUES[lk].table.map(r => r[0]);
+
+function derive(id){
+  const [g,p2m,p2a,p3m,p3a,ftm,fta,p,a,or,dr,tr,f,bl,st,to,ef] = TS[id];
+  const r = ROW[id];
+  return {
+    g, p:p/g, pa:r.minus/r.g, diff:(r.plus-r.minus)/r.g, ef:ef/g,
+    fgp:(p2m+p3m)/(p2a+p3a), fgm:(p2m+p3m)/g, fga:(p2a+p3a)/g,
+    p2p:p2m/p2a, p2m:p2m/g, p2a:p2a/g, p3p:p3m/p3a, p3m:p3m/g, p3a:p3a/g,
+    ftp:ftm/fta, ftm:ftm/g, fta:fta/g,
+    or:or/g, dr:dr/g, tr:tr/g, a:a/g, to:to/g, st:st/g, bl:bl/g, f:f/g
+  };
+}
+function aufbereiten(){
+  STAND = new Date();
+  ROW = {};
+  Object.entries(LEAGUES).forEach(([lk,L]) => L.table.forEach((r,i) => {
+    ROW[r[0]] = {rank:i+1,id:r[0],g:r[1],s:r[2],n:r[3],pkt:r[4],plus:r[5],minus:r[6],heim:r[7],gast:r[8],serie:r[9],l:lk};
+  }));
+  GAMES = GAMES_RAW.map(([d,st,h,a,hs,as]) => ({dt:parseD(d),st,h,a,hs:hs ?? null,as:as ?? null}));
+  D = {}; Object.keys(TS).forEach(id => D[id] = derive(Number(id)));
+}
+
+function rankOf(k,id,dir){
+  const d = dir === -1 ? -1 : 1, v = D[id][k];
+  let r = 1;
+  idsOf(TEAMS[id].l).forEach(t => { if (t !== id && d*(D[t][k]-v) > 1e-9) r++; });
+  return r;
+}
+
+function parsePlayer(a){
+  const [nr,name,pos,g,min,p2m,p2a,p3m,p3a,ftm,fta,P,A,OR,DR,TR,F,BL,ST,TO,EF,PM,flag] = a;
+  const [fn,ln] = name.split('|');
+  const [mm,ss] = min.split(':').map(Number);
+  return {nr,fn,ln,pos,g,mins:mm+ss/60,p2m,p2a,p3m,p3a,ftm,fta,P,A,OR,DR,TR,F,BL,ST,TO,EF,PM,flag};
+}
+const shortName = p => (p.fn.length <= 2 ? p.fn : p.fn.trim()[0] + '.') + ' ' + p.ln;
+const fmtMin = x => { const m = Math.floor(x), s = Math.round((x-m)*60); return s === 60 ? `${m+1}:00` : `${m}:${pad(s)}`; };
+
+/* ---------- Zustand: nichts ist voreingestellt ---------- */
+const state = { league:null, own:null, opp:null };
+
+const upcoming = id => GAMES.filter(g => g.hs === null && g.dt > STAND && (g.h === id || g.a === id)).sort((x,y) => x.dt - y.dt);
+const played = id => GAMES.filter(g => g.hs !== null && (g.h === id || g.a === id)).sort((x,y) => x.dt - y.dt);
+const oppOf = (g,id) => g.h === id ? g.a : g.h;
+const $ = id => document.getElementById(id);
+
+/* ---------- Ausgabe ---------- */
+function renderSteps(){
+  const s = [!!state.league, !!state.own, !!state.opp];
+  ['step1','step2','step3'].forEach((id,i) => {
+    $(id).className = s[i] ? 'done' : (i === 0 || s[i-1]) ? 'active' : '';
+  });
+  $('start').hidden = !!state.own;
+}
+
+function renderOwnSelect(){
+  const sel = $('own');
+  if (!state.league){ sel.disabled = true; sel.innerHTML = '<option value="">Zuerst Liga wählen</option>'; return; }
+  const opts = idsOf(state.league).map(id => [id, TEAMS[id].n]).sort((a,b) => a[1].localeCompare(b[1],'de'))
+    .map(([id,n]) => `<option value="${id}"${id === state.own ? ' selected' : ''}>${n}</option>`).join('');
+  sel.innerHTML = `<option value=""${state.own ? '' : ' selected'} disabled>Team wählen</option>` + opts;
+  sel.disabled = false;
+}
+
+function renderNext(){
+  if (!state.own){
+    $('next-wrap').innerHTML = '<p class="placeholder">Wähle oben dein Team, dann erscheinen hier die nächsten drei Spiele.</p>';
+    return;
+  }
+  const list = upcoming(state.own).slice(0,3);
+  $('next-wrap').innerHTML = `<ol class="games">` + (list.map(g => {
+    const o = oppOf(g,state.own), home = g.h === state.own, r = ROW[o];
+    return `<li><button class="game" type="button" data-opp="${o}" aria-pressed="${o === state.opp}">
+      <span class="g-date">${fmtDay(g.dt)}<span>${fmtTime(g.dt)}</span></span>
+      <span><span class="g-where">${home ? 'Heimspiel gegen' : 'Auswärts bei'}</span><span class="g-opp">${TEAMS[o].n}</span></span>
+      <span class="g-rank num">Platz ${r.rank}<br>${r.s}–${r.n}</span>
+    </button></li>`;
+  }).join('') || '<li class="hint">Im Datenstand sind keine weiteren Spiele enthalten.</li>') + `</ol>
+    <p class="hint">Den Gegner oben im Feld „Gegner“ wählen oder hier ein Spiel bzw. in der Tabelle ein Team antippen.</p>`;
+  $('next-wrap').querySelectorAll('.game').forEach(b => b.addEventListener('click', () => selectOpp(Number(b.dataset.opp), true)));
+}
+
+function renderTable(){
+  const L = LEAGUES[state.league];
+  $('h-table').textContent = `Tabelle ${L.name}`;
+  $('table-src').href = L.tableUrl;
+  $('table-foot').textContent = (L.note ? L.note + ' ' : '') + `Stand der Tabelle: ${L.tableStand}.`;
+  $('table').innerHTML = idsOf(state.league).map(id => {
+    const r = ROW[id], t = TEAMS[id], diff = r.plus - r.minus;
+    const cls = id === state.own ? 'is-own' : id === state.opp ? 'is-opp' : '';
+    const name = id === L.mark ? t.n + '*' : t.n;
+    const cell = (!state.own || id === state.own)
+      ? `<span>${name}</span>`
+      : `<button class="team-btn" type="button" data-opp="${id}" aria-label="${t.n} analysieren">${name}</button>`;
+    const serie = r.serie > 0 ? `${r.serie} S` : `${Math.abs(r.serie)} N`;
+    return `<tr class="${cls}"><td class="num">${r.rank}</td><td>${cell}</td><td class="num">${r.g}</td><td class="num">${r.s}–${r.n}</td>
+      <td class="num">${r.pkt}</td><td class="num">${diff > 0 ? '+' : diff < 0 ? '−' : ''}${Math.abs(diff)}</td>
+      <td class="num col-wide">${r.heim}</td><td class="num col-wide">${r.gast}</td><td class="num col-wide">${serie}</td></tr>`;
+  }).join('');
+  $('table').querySelectorAll('.team-btn').forEach(b => b.addEventListener('click', () => selectOpp(Number(b.dataset.opp), true)));
+}
+
+const COURT = `<svg viewBox="0 0 1000 530" preserveAspectRatio="xMidYMid slice" fill="none" stroke="var(--court-line)" stroke-width="3">
+  <rect x="20" y="20" width="960" height="490"/><line x1="500" y1="20" x2="500" y2="510"/><circle cx="500" cy="265" r="62"/>
+  <rect x="20" y="181" width="199" height="168"/><circle cx="219" cy="265" r="62"/><circle cx="74" cy="265" r="9"/>
+  <path d="M20 51 H122 A231 231 0 0 1 122 479 H20"/>
+  <rect x="781" y="181" width="199" height="168"/><circle cx="781" cy="265" r="62"/><circle cx="926" cy="265" r="9"/>
+  <path d="M980 51 H878 A231 231 0 0 0 878 479 H980"/></svg>`;
+
+function formDots(id){
+  const last = played(id).slice(-5);
+  const lbl = last.map(g => { const my = g.h === id ? g.hs : g.as, ot = g.h === id ? g.as : g.hs; return my > ot ? 'S' : 'N'; });
+  const dots = last.map((g,i) => {
+    const home = g.h === id, my = home ? g.hs : g.as, ot = home ? g.as : g.hs, o = oppOf(g,id);
+    const t = `${lbl[i] === 'S' ? 'Sieg' : 'Niederlage'} ${my}:${ot} ${home ? 'gegen' : 'in'} ${TEAMS[o].s}`;
+    return `<span class="dot ${lbl[i] === 'S' ? 'w' : ''}" title="${t}"></span>`;
+  }).join('');
+  return `<span class="form" role="img" aria-label="Form der letzten ${last.length} Spiele, älteste zuerst: ${lbl.join(', ')}">${dots}</span>`;
+}
+
+function sideHtml(id, cls){
+  const r = ROW[id];
+  return `<div class="mu-side ${cls}"><span class="mu-code">${TEAMS[id].c}</span><span class="mu-name">${TEAMS[id].n}</span>
+    <span class="mu-rec num">Platz ${r.rank}, ${r.s}–${r.n}</span>${formDots(id)}</div>`;
+}
+
+function renderMatchup(){
+  const own = state.own, opp = state.opp;
+  if (!opp){
+    $('matchup').innerHTML = `<div class="mu-court" aria-hidden="true">${COURT}</div>
+      <div class="mu-grid">${sideHtml(own,'own')}<div class="mu-center"><span class="mu-vs">gegen</span></div>
+        <div class="mu-side opp"><span class="mu-code" aria-hidden="true">?</span><span class="mu-ask">Gegner oben im Feld „Gegner“ wählen oder ein Spiel antippen</span></div></div>`;
+    return;
+  }
+  const meet = GAMES.find(g => g.hs === null && g.dt > STAND && ((g.h === own && g.a === opp) || (g.h === opp && g.a === own)));
+  const h2h = GAMES.filter(g => g.hs !== null && ((g.h === own && g.a === opp) || (g.h === opp && g.a === own)));
+  const center = meet
+    ? `<span class="mu-vs">gegen</span><span class="mu-when">${fmtDay(meet.dt)} ${fmtTime(meet.dt)}</span><span class="mu-venue">${meet.h === own ? 'Heimspiel' : 'Auswärts in ' + TEAMS[meet.h].s}</span>`
+    : `<span class="mu-vs">gegen</span><span class="mu-venue">Kein Duell in den nächsten Spieltagen</span>`;
+  const h2hText = h2h.length
+    ? 'Bisher in dieser Saison: ' + h2h.map(g => `${pad(g.dt.getDate())}.${pad(g.dt.getMonth()+1)}. ${TEAMS[g.h].s} gegen ${TEAMS[g.a].s} ${g.hs}:${g.as}`).join('; ')
+    : 'In dieser Saison noch kein direktes Duell.';
+  $('matchup').innerHTML = `<div class="mu-court" aria-hidden="true">${COURT}</div>
+    <div class="mu-grid">${sideHtml(own,'own')}<div class="mu-center">${center}</div>${sideHtml(opp,'opp')}</div>
+    <p class="mu-h2h">${h2hText}</p>`;
+}
+
+const madeAtt = (m,a) => x => `${f1(x[m])}/${f1(x[a])}`;
+const CMP = [
+  {grp:'Punkte', rows:[
+    {k:'p', l:'Erzielte Punkte', b:1},
+    {k:'pa', l:'Zugelassene Punkte', b:-1},
+    {k:'diff', l:'Punktedifferenz', b:1, fmt:signed},
+    {k:'ef', l:'Effizienz', b:1}
+  ]},
+  {grp:'Würfe', rows:[
+    {k:'fgp', l:'Feldwurfquote', b:1, fmt:pct, d:madeAtt('fgm','fga')},
+    {k:'p2p', l:'Zweier', b:1, fmt:pct, d:madeAtt('p2m','p2a')},
+    {k:'p3p', l:'Dreier', b:1, fmt:pct, d:madeAtt('p3m','p3a')},
+    {k:'p3a', l:'Dreierversuche', b:0, note:'Spielstil'},
+    {k:'ftp', l:'Freiwürfe', b:1, fmt:pct, d:madeAtt('ftm','fta')},
+    {k:'fta', l:'Freiwurfversuche', b:1}
+  ]},
+  {grp:'Rebounds', rows:[
+    {k:'or', l:'Offensivrebounds', b:1},
+    {k:'dr', l:'Defensivrebounds', b:1},
+    {k:'tr', l:'Rebounds gesamt', b:1}
+  ]},
+  {grp:'Ballkontrolle und Defense', rows:[
+    {k:'a', l:'Assists', b:1},
+    {k:'to', l:'Ballverluste', b:-1},
+    {k:'st', l:'Steals', b:1},
+    {k:'bl', l:'Blocks', b:1},
+    {k:'f', l:'Fouls', b:-1}
+  ]}
+];
+
+function renderCompare(){
+  const o = state.own, g = state.opp, L = LEAGUES[state.league], N = idsOf(state.league).length;
+  $('cmp-sub').textContent = `Pro Spiel, Hauptrunde 2026/27, ${L.name}. Stand: ${L.tsStand}`;
+  $('cmp-src').href = L.tsUrl;
+  $('cmp-legend').textContent = `Die Balken zeigen den Ligarang unter allen ${N} Teams: je länger, desto besser. Der bessere Wert ist farbig hervorgehoben.`;
+  const width = r => (8 + 92*(N-r)/(N-1)).toFixed(1) + '%';
+  let html = `<div class="cmp-cols"><span class="o">${TEAMS[o].c}</span><span></span><span class="g">${TEAMS[g].c}</span></div>`;
+  CMP.forEach(grp => {
+    html += `<h3 class="cmp-grp">${grp.grp}</h3>`;
+    grp.rows.forEach(row => {
+      const fmt = row.fmt || f1, vo = D[o][row.k], vg = D[g][row.k];
+      const ro = rankOf(row.k,o,row.b), rg = rankOf(row.k,g,row.b);
+      let wo = false, wg = false;
+      if (row.b !== 0 && Math.abs(vo - vg) > 1e-9){ const better = row.b*(vo - vg) > 0; wo = better; wg = !better; }
+      const sub = (x,r) => (row.d ? row.d(D[x]) + '<br>' : '') + `Rang ${r}`;
+      const fc = row.b === 0 ? ['n','n'] : ['o','g'];
+      html += `<div class="cmp-row">
+        <div class="cmp-val o${wo ? ' win' : ''}"><b>${fmt(vo)}</b><small>${sub(o,ro)}</small></div>
+        <div class="cmp-mid"><div class="cmp-label">${row.l}${row.note ? ` <em>(${row.note})</em>` : ''}</div>
+          <div class="bars" aria-hidden="true"><span class="half l"><span class="fill ${fc[0]}" style="--w:${width(ro)}"></span></span><span class="half"><span class="fill ${fc[1]}" style="--w:${width(rg)}"></span></span></div></div>
+        <div class="cmp-val g${wg ? ' win' : ''}"><b>${fmt(vg)}</b><small>${sub(g,rg)}</small></div>
+      </div>`;
+    });
+  });
+  $('compare').innerHTML = html;
+}
+
+const CATS = [
+  {t:'Minuten', u:'pro Spiel', v:p => p.mins/p.g, show:fmtMin, d:p => `${p.g} Einsätze`},
+  {t:'Punkte', u:'pro Spiel', v:p => p.P/p.g, d:p => `FG ${pct((p.p2m+p.p3m)/(p.p2a+p.p3a))}, ${f1((p.p2a+p.p3a)/p.g)} Würfe`},
+  {t:'Rebounds', u:'pro Spiel', v:p => p.TR/p.g, d:p => `${f1(p.OR/p.g)} offensiv, ${f1(p.DR/p.g)} defensiv`},
+  {t:'Assists', u:'pro Spiel', v:p => p.A/p.g, d:p => `${f1(p.TO/p.g)} Ballverluste`},
+  {t:'Dreier', u:'Treffer pro Spiel', v:p => p.p3m/p.g, d:p => `${f1(p.p3a/p.g)} Versuche, ${pct(p.p3m/p.p3a)}`},
+  {t:'Effizienz', u:'pro Spiel', v:p => p.EF/p.g, d:p => `Plus/Minus gesamt ${signedInt(p.PM)}`},
+  {t:'Steals', u:'pro Spiel', v:p => p.ST/p.g, d:p => `${f1(p.mins/p.g)} Minuten`},
+  {t:'Blocks', u:'pro Spiel', v:p => p.BL/p.g, d:p => `${f1(p.mins/p.g)} Minuten`},
+  {t:'Ballverluste', u:'pro Spiel', v:p => p.TO/p.g, d:p => `${f1(p.A/p.g)} Assists`}
+];
+
+function renderLeaders(){
+  const id = state.opp, t = TEAMS[id];
+  $('lead-src').href = kaderUrl(id);
+  $('lead-sub').textContent = `${t.n}, Durchschnitt pro Spiel`;
+  if (!PLAYERS[id]){
+    const avail = Object.keys(PLAYERS).map(Number).filter(x => TEAMS[x].l === state.league).map(x => TEAMS[x].n);
+    $('leaders').innerHTML = `<div class="empty"><p>Für ${t.n} liegen beim letzten Einlesen keine Spielerwerte vor. Sie werden beim nächsten Einlesen ergänzt.</p>
+      <a href="${kaderUrl(id)}" target="_blank" rel="noopener">Kader und Spielerstatistik auf 2basketballbundesliga.de öffnen</a></div>`;
+    $('lead-note').textContent = '';
+    return;
+  }
+  const all = PLAYERS[id].map(parsePlayer);
+  const pg = Math.max(...all.map(p => p.g)), tg = ROW[id].g;
+  const minG = Math.max(2, Math.ceil(pg * 0.4));
+  const pool = all.filter(p => p.g >= minG && p.flag !== 'left');
+  const out = all.filter(p => !pool.includes(p));
+  const warn = pg < tg
+    ? `<p class="warn">Die Kader-Seite enthält Spielerwerte aus erst ${pg} von ${tg} Spielen${KADER_STAND[id] ? ` (Stand ${KADER_STAND[id]})` : ''}. Die Top 5 können sich noch verschieben.</p>`
+    : '';
+  $('leaders').innerHTML = warn + `<div class="leader-grid">` + CATS.map(c => {
+    const top = pool.map(p => ({p, v:c.v(p)})).filter(x => x.v > 0).sort((a,b) => b.v - a.v).slice(0,5);
+    const show = c.show || f1;
+    let shown = 0;
+    return `<section class="leader"><h3>${c.t} <span>${c.u}</span></h3><ol>` + top.map((x,i) => {
+      const r = i > 0 && Math.abs(x.v - top[i-1].v) < 1e-9 ? shown : (shown = i+1);
+      return `<li class="${r === 1 ? 'first' : ''}"><span class="lr">${r}</span><span class="lw"><span class="ln">${shortName(x.p)}</span><span class="lm">#${x.p.nr}, ${x.p.pos}, ${c.d(x.p)}</span></span><span class="lv">${show(x.v)}</span></li>`;
+    }).join('') + `</ol></section>`;
+  }).join('') + `</div>`;
+  const sumP = all.reduce((s,p) => s + p.P, 0), teamP = TS[id][7];
+  const check = sumP === teamP ? ` Datenprüfung: Die Spielerpunkte ergeben zusammen ${sumP} und stimmen mit der Teamstatistik überein.` : ` Datenprüfung: Die Spielerpunkte ergeben zusammen ${sumP}, die Teamstatistik nennt ${teamP}. Eine der beiden Quellen ist nicht aktuell.`;
+  const outText = out.map(p => `${shortName(p)} (${p.flag === 'left' ? 'nicht mehr im Kader' : p.g === 1 ? '1 Einsatz' : p.g + ' Einsätze'})`).join(', ');
+  $('lead-note').textContent = `Gewertet werden Spieler mit mindestens ${minG} Einsätzen, die aktuell im Kader stehen.` + (outText ? ` Nicht gewertet: ${outText}.` : '') + check;
+}
+
+function renderOppSelect(){
+  const sel = $('opp');
+  if (!state.own){ sel.disabled = true; sel.innerHTML = '<option value="">Zuerst eigenes Team wählen</option>'; return; }
+  const nextGames = upcoming(state.own).slice(0,3);
+  const nextIds = [...new Set(nextGames.map(g => oppOf(g,state.own)))];
+  const rest = idsOf(state.league).filter(id => id !== state.own && !nextIds.includes(id))
+    .sort((a,b) => TEAMS[a].n.localeCompare(TEAMS[b].n,'de'));
+  const opt = (id, extra) => `<option value="${id}"${id === state.opp ? ' selected' : ''}>${TEAMS[id].n}${(() => { const n = [extra, PLAYERS[id] ? '' : 'ohne Spielerwerte'].filter(Boolean); return n.length ? ` (${n.join(', ')})` : ''; })()}</option>`;
+  const nextOpts = nextIds.map(id => opt(id, fmtDay(nextGames.find(g => oppOf(g,state.own) === id).dt))).join('');
+  sel.innerHTML = `<option value=""${state.opp ? '' : ' selected'} disabled>Gegner wählen</option>`
+    + (nextOpts ? `<optgroup label="Nächste Gegner">${nextOpts}</optgroup>` : '')
+    + `<optgroup label="Weitere Teams der ${LEAGUES[state.league].name}">${rest.map(id => opt(id)).join('')}</optgroup>`;
+  sel.disabled = false;
+}
+
+function render(){
+  renderSteps();
+  renderOppSelect();
+  $('overview').hidden = !state.league;
+  $('analysis').hidden = !state.own;
+  if (state.league){ renderNext(); renderTable(); }
+  if (state.own){
+    renderMatchup();
+    $('analysis-grid').hidden = !state.opp;
+    if (state.opp){ renderCompare(); renderLeaders(); }
+  }
+}
+
+function selectOpp(id, scroll){
+  if (id === state.own) return;
+  state.opp = id;
+  render();
+  if (scroll){
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('analysis').scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'start'});
+  }
+}
+
+$('league').addEventListener('change', e => {
+  state.league = e.target.value || null; state.own = null; state.opp = null;
+  renderOwnSelect(); render();
+});
+$('own').addEventListener('change', e => {
+  state.own = Number(e.target.value) || null; state.opp = null;
+  render();
+});
+$('opp').addEventListener('change', e => {
+  const id = Number(e.target.value);
+  if (id) selectOpp(id, true);
+});
+const fmtZeit = iso => { const t = new Date(iso); return `${pad(t.getDate())}.${pad(t.getMonth()+1)}.${t.getFullYear()}, ${pad(t.getHours())}:${pad(t.getMinutes())} Uhr`; };
+const warte = ms => new Promise(r => setTimeout(r, ms));
+
+function fussnoten(){
+  const parts = Object.entries(LEAGUES).map(([lk,L]) => {
+    const ids = idsOf(lk), have = ids.filter(id => PLAYERS[id]);
+    return `${L.name}: ${have.length} von ${ids.length}`;
+  });
+  const alle = Object.keys(TEAMS).length, mit = Object.keys(PLAYERS).length;
+  $('quelle-info').textContent = `Alle Werte stammen von 2basketballbundesliga.de (Tabellen, Teamstatistiken und Kader-Seiten der Teams). Zuletzt eingelesen am ${fmtZeit(DATA.stand)}. Den Stand jeder Quelle zeigen die Tabelle und der Vergleich.`;
+  $('coverage').textContent = mit === alle
+    ? `Spielerwerte sind für alle ${alle} Teams hinterlegt.`
+    : `Spielerwerte sind für ${mit} von ${alle} Teams hinterlegt (${parts.join(', ')}). Teams ohne Spielerwerte sind im Feld „Gegner“ gekennzeichnet.`;
+  const w = DATA.warnungen || [];
+  $('hinweise').textContent = w.length ? `Hinweise vom letzten Einlesen: ${w.join(' ')}` : '';
+}
+
+function uebernehmen(d){
+  DATA = d;
+  TEAMS = d.teams; LEAGUES = d.ligen; TS = d.teamstat; GAMES_RAW = d.spiele; PLAYERS = d.spieler;
+  KADER_STAND = Object.fromEntries(Object.entries(d.teams).filter(([,t]) => t.kaderStand).map(([id,t]) => [id, t.kaderStand]));
+  aufbereiten();
+  if (state.league && !LEAGUES[state.league]) { state.league = null; state.own = null; state.opp = null; }
+  if (state.own && !TEAMS[state.own]) { state.own = null; state.opp = null; }
+  if (state.opp && !TEAMS[state.opp]) state.opp = null;
+  $('datenstand').textContent = `Datenstand: ${fmtZeit(d.stand)}`;
+  $('league').disabled = false;
+  $('refresh').disabled = false;
+  fussnoten(); renderOwnSelect(); render();
+}
+
+async function ladeDaten(frisch){
+  const url = KONFIG.datenUrl + (frisch ? `?t=${Date.now()}` : '');
+  const r = await fetch(url, {cache: frisch ? 'no-store' : 'default'});
+  if (!r.ok) throw new Error(`Die Datendatei ist nicht erreichbar (HTTP ${r.status}).`);
+  return r.json();
+}
+
+async function aktualisieren(){
+  const btn = $('refresh'), info = $('sync'), alt = DATA && DATA.stand;
+  btn.disabled = true;
+  try {
+    if (!KONFIG.startUrl){
+      info.textContent = 'Neuester Datenstand wird geladen …';
+      const d = await ladeDaten(true);
+      uebernehmen(d);
+      info.textContent = d.stand !== alt
+        ? 'Neuer Datenstand geladen.'
+        : 'Es gibt noch keinen neueren Datenstand. Die Liga-Seiten werden jeden Abend automatisch neu eingelesen.';
+      return;
+    }
+    info.textContent = 'Neu-Einlesen wird gestartet …';
+    const r = await fetch(KONFIG.startUrl.replace(/\/$/, '') + '/start', {method: 'POST'});
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 429){ info.textContent = j.meldung || 'Die Daten wurden gerade erst eingelesen. Bitte in einigen Minuten erneut versuchen.'; return; }
+    if (!r.ok) throw new Error(j.meldung || `Start abgelehnt (HTTP ${r.status}).`);
+    info.textContent = 'Die Liga-Seiten werden neu eingelesen. Das dauert meist 2 bis 4 Minuten; du kannst die App solange weiter nutzen.';
+    const ende = Date.now() + KONFIG.maxWartenMin * 60000;
+    while (Date.now() < ende){
+      await warte(20000);
+      const d = await ladeDaten(true).catch(() => null);
+      if (d && d.stand !== alt){ uebernehmen(d); info.textContent = `Daten aktualisiert (${fmtZeit(d.stand)}).`; return; }
+    }
+    info.textContent = 'Das Einlesen dauert länger als erwartet. Bitte die Seite in einigen Minuten neu laden.';
+  } catch (e) {
+    info.textContent = `Aktualisieren fehlgeschlagen: ${e.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+$('refresh').addEventListener('click', () => window.coachesLocalSync());
+$('league').value = '';
+renderSteps();
+/* Initialer Import wird erst nach lokaler Freischaltung gestartet. */
+
+// Local-first, no backend authentication; deliberately non-sensitive public dataset only.
+const DB_NAME = 'CoachesAnalyseLocalV2';
+let dbPromise;
+function localDB(){
+ if(!dbPromise) dbPromise=new Promise((resolve,reject)=>{
+  const req=indexedDB.open(DB_NAME,1);
+  req.onupgradeneeded=()=>req.result.createObjectStore('records');
+  req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+ }); return dbPromise;
+}
+async function localGet(key){const db=await localDB();return new Promise((resolve,reject)=>{const t=db.transaction('records','readonly');const r=t.objectStore('records').get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+async function localPut(key,obj){const db=await localDB();return new Promise((resolve,reject)=>{const t=db.transaction('records','readwrite');t.objectStore('records').put(obj,key);t.oncomplete=resolve;t.onerror=()=>reject(t.error);});}
+function validateDataset(d){
+ if(!d||typeof d!=='object'||!d.ligen||!d.teams||!d.teamstat||!Array.isArray(d.spiele)||!d.spieler||typeof d.stand!=='string')throw new Error('Ungültiges Datenformat (Ligen/Teams/Statistiken/Spiele fehlen).');
+ const keys=Object.keys(d.teams);if(!keys.length||keys.length>200)throw new Error('Unplausible Teamanzahl.');
+ for(const [lk,l] of Object.entries(d.ligen)){if(!Array.isArray(l.table))throw new Error('Ligatabelle fehlt: '+lk); for(const r of l.table){if(!d.teams[String(r[0])])throw new Error('Tabelle referenziert fehlendes Team '+r[0]);}}
+ for(const id of keys){if(!Array.isArray(d.teamstat[id])||d.teamstat[id].length<17)throw new Error('Fehlende Teamstatistik '+id);}
+ return keys.length;
+}
+async function activate(){
+ $('auth-wall').hidden=true;$('public-preview').hidden=true;$('app-shell').hidden=false;
+ try{
+  let stored=await localGet('dataset');
+  if(!stored){stored=await ladeDaten(false);validateDataset(stored);await localPut('dataset',stored);}
+  validateDataset(stored);uebernehmen(stored); $('local-stat').textContent=`${Object.keys(stored.teams).length} Teams · lokal: ${fmtZeit(stored.stand)}`;
+ }catch(e){$('sync').textContent='Daten konnten nicht geladen werden: '+e.message;}
+}
+const encode=new TextEncoder();
+async function hashPass(pass,salt){
+ const raw=await crypto.subtle.importKey('raw',encode.encode(pass),'PBKDF2',false,['deriveBits']);
+ const bits=await crypto.subtle.deriveBits({name:'PBKDF2',salt:new Uint8Array(salt),iterations:160000,hash:'SHA-256'},raw,256);
+ return Array.from(new Uint8Array(bits)).map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+$('auth-form').addEventListener('submit',async e=>{
+ e.preventDefault(); const pass=$('auth-pass').value; if(pass.length<10)return;
+ try{
+  const verifier=await localGet('verifier');
+  if(!verifier){const salt=Array.from(crypto.getRandomValues(new Uint8Array(16)));await localPut('verifier',{salt,hash:await hashPass(pass,salt)});}
+  else if(await hashPass(pass,verifier.salt)!==verifier.hash){$('auth-status').textContent='Falsche Passphrase';return;}
+  $('auth-pass').value='';sessionStorage.setItem('coach-unlocked','1');await activate();
+ }catch(error){$('auth-status').textContent='Lokales Speichern nicht möglich: '+error.message;}
+});
+$('logout').addEventListener('click',()=>{sessionStorage.removeItem('coach-unlocked');location.reload();});
+async function syncDataset(){
+ const b=$('local-sync');b.disabled=true;try{
+  $('local-info').textContent='Prüfe veröffentlichte JSON-Datei …';
+  const d=await ladeDaten(true);const count=validateDataset(d);
+  const current=await localGet('dataset');
+  if(current&&Date.parse(d.stand)<Date.parse(current.stand))throw new Error('Die veröffentlichte Version ist älter als die lokale Version. Keine Überschreibung.');
+  await localPut('dataset',d);uebernehmen(d);
+  $('local-stat').textContent=`${count} Teams · lokal: ${fmtZeit(d.stand)}`;
+  $('local-info').textContent=current&&current.stand===d.stand?'Keine neuere Version vorhanden.':'Veröffentlichte Daten wurden geprüft und lokal gespeichert.';
+ }catch(e){$('local-info').textContent='Aktualisierung fehlgeschlagen: '+e.message;}finally{b.disabled=false;}
+}
+window.coachesLocalSync=syncDataset;
+$('local-sync').addEventListener('click',syncDataset);
+$('export-json').addEventListener('click',async()=>{
+ const data=await localGet('dataset');if(!data)return;
+ const u=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+ const a=document.createElement('a');a.href=u;a.download='coaches-analyse-daten.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),2000);
+});
+$('import-json').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{if(f.size>20*1024*1024)throw new Error('Maximal 20 MB erlaubt.');const d=JSON.parse(await f.text());const n=validateDataset(d);
+ await localPut('dataset',d);uebernehmen(d);$('local-stat').textContent=`${n} Teams · lokal: ${fmtZeit(d.stand)}`;
+ $('local-info').textContent='Lokaler JSON-Import erfolgreich.';
+ }catch(err){$('local-info').textContent='Importfehler: '+err.message;}e.target.value='';
+});
+// Newly sourced online collection can only start via an authenticated backend and written permission.
+// Deliberately disabled in this demonstration, regardless of any client-side setting.
+$('central-start').disabled=true;
+if(sessionStorage.getItem('coach-unlocked')==='1')activate();
+</script>
+</body>
+</html>
