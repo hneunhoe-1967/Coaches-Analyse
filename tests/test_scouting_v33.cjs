@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict');
+const {inspect,roles,gameplan}=require('../docs/scouting-v33.js');
+const p=[8,'Ada|Muster','F',2,'20:00',8,12,2,6,3,4,25,18,5,12,17,4,1,8,7,32,4];
+const team=[2,8,12,2,6,3,4,25,18,5,12,17,4,1,8,7,32];
+const data={teams:{'1':{n:'A',kaderStand:'2026-10-23'},'2':{n:'B',kaderStand:'2026-10-23'}},teamstat:{'1':team,'2':team},spieler:{'1':[p],'2':[p]}};
+assert.equal(inspect(data,'1').level,'ok');
+assert.equal(inspect(data,'3').level,'error');
+assert.equal(roles([p],4)[0].tags.includes('Scorer'),true);
+assert.equal(roles([p],4)[0].tags.includes('Spielmacher'),true);
+assert.equal(roles([p],4)[0].tags.includes('Rebounder'),true);
+assert.equal(gameplan(data,'1','2').quality.length,2);
+assert.equal(gameplan(data,'1','2').warnings.length,3);
+console.log('Scouting 3.3: 7 Prüfungen erfolgreich');
