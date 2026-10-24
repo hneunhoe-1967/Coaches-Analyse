@@ -207,7 +207,7 @@ select:disabled{opacity:.55}
 #public-preview h2{margin:10px 0}
 #public-preview .preview-links{display:flex;flex-wrap:wrap;gap:12px}
 
-/* Datenverwaltung 3.0 */
+/* Datenverwaltung 3.1 */
 .data-admin{max-width:1180px;margin:20px auto 0;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
 .data-admin[hidden]{display:none}.data-admin h2{margin-bottom:8px}.admin-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
 .admin-actions button,.admin-actions label{border:1px solid var(--line-strong);background:var(--bg);color:var(--ink);border-radius:8px;padding:10px 12px;cursor:pointer;font:inherit}
@@ -218,6 +218,7 @@ select:disabled{opacity:.55}
 .admin-table th,.admin-table td{padding:9px;border-bottom:1px solid var(--line);font-size:14px;text-align:left}
 .admin-table thead{position:sticky;top:0;background:var(--surface)}
 .admin-state{color:var(--muted);font-size:13px}.admin-error{color:#d57443;font-weight:600}
+.csv-import-box{border:1px solid var(--line-strong);border-radius:12px;padding:14px;margin:14px 0}.csv-import-box h3{margin:0 0 8px}.csv-import-box input,.csv-import-box select{font:inherit;max-width:100%;padding:7px;background:var(--bg);color:var(--ink);border:1px solid var(--line-strong);border-radius:7px}.csv-import-box button{border:1px solid var(--line-strong);background:var(--bg);color:var(--ink);padding:10px;border-radius:8px;cursor:pointer}.csv-import-box .csv-confirm{display:block;margin:13px 0}.csv-import-box .admin-table{max-height:300px}
 </style>
 </head>
 <body>
@@ -249,13 +250,25 @@ select:disabled{opacity:.55}
   <small id="local-info">Lokale Speicherung mit IndexedDB. Import ohne Freigabe gesperrt; ausschließlich mitgelieferte Testdaten verwenden.</small>
 </section></div>
 <section id="data-admin" class="data-admin" hidden aria-labelledby="admin-title">
-  <h2 id="admin-title">Datenverwaltung · Version 3.0</h2>
+  <h2 id="admin-title">Datenverwaltung · Version 3.1</h2>
   <p class="sec-sub">Prüfe je Mannschaft die Datenabdeckung. Ein manuell importierter Kader wird ausschließlich in diesem Browser gespeichert.</p>
   <div class="admin-counters" id="admin-counters" aria-live="polite"></div>
   <div class="admin-actions">
     <button id="admin-toggle" type="button" aria-expanded="false">Mannschaften anzeigen</button>
     <button id="admin-template" type="button">JSON-Vorlage für Reutlingen herunterladen</button>
     <label>Spielerstatistik importieren <input id="admin-import" type="file" accept=".json,application/json" hidden></label>
+  </div>
+  <div class="csv-import-box" id="csv-import-box">
+    <h3>CSV-Spielerstatistiken importieren (lokal)</h3>
+    <p>Offizielle CSV-Statistikdatei auswählen. Die Werte werden vor dem Speichern geprüft; kein automatischer Webseitenabruf.</p>
+    <div class="admin-actions">
+      <label>Mannschaft <select id="csv-team"><option value="591">Reutlingen</option><option value="559">BBC Coburg</option><option value="482">TV Langen</option></select></label>
+      <label>Datenstand <input id="csv-date" type="date"></label>
+      <label>CSV-Datei <input id="csv-file" type="file" accept=".csv,text/csv"></label>
+      <button type="button" id="csv-check">CSV prüfen</button>
+    </div>
+    <div id="csv-preview" hidden><p id="csv-summary"></p><div class="admin-table"><table><thead><tr><th>Spieler</th><th>Spiele</th><th>Punkte</th><th>Assists</th><th>Rebounds</th><th>Rekonstruktionen</th></tr></thead><tbody id="csv-players"></tbody></table></div><label class="csv-confirm"><input id="csv-confirm" type="checkbox"> Ich habe Mannschaft, Saison, Datenstand und die rekonstruierten Werte anhand der Quelle geprüft.</label><button type="button" id="csv-save">Geprüfte Spieler lokal übernehmen</button></div>
+    <p class="admin-state" id="csv-status" role="status"></p>
   </div>
   <p id="admin-info" class="admin-state" role="status" aria-live="polite">Online-Erfassung weiterhin gesperrt, bis Nutzungsbedingungen geklärt sind. Nur zulässig bereitgestellte Statistikdateien verwenden.</p>
   <div id="admin-detail" hidden>
@@ -369,6 +382,7 @@ select:disabled{opacity:.55}
 </footer>
 
 </div>
+<script src="csv-import.js"></script>
 <script>
 /* ---------- Konfiguration ---------- */
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -846,7 +860,7 @@ $('import-json').addEventListener('change',async e=>{
  }catch(err){$('local-info').textContent='Importfehler: '+err.message;}e.target.value='';
 });
 
-/* ---- Datenverwaltung 3.0: kein Netzabruf, nur lokale Importdateien ---- */
+/* ---- Datenverwaltung 3.1: kein Netzabruf, nur lokale Importdateien ---- */
 function adminStatusFor(id){
  const d=DATA || {}, ps=d.spieler?.[id], team=d.teams?.[id] || {};
  const synthetic=Boolean(team.synthetic || d.testdaten || d.synthetic || (d.syntheticTeams||[]).map(String).includes(String(id)));
@@ -896,7 +910,7 @@ function validateTeamImport(obj,data){
   if(!Number.isInteger(row[0])||row[0]<0||row[0]>999||typeof row[1]!=='string'||!row[1].includes('|')||typeof row[2]!=='string')throw new Error('Ungültige Spieler-Identität.');
   const key=row[0]+':'+row[1];if(used.has(key))throw new Error('Doppelter Spieler: '+row[1]);used.add(key);
   if(!Number.isInteger(row[3])||row[3]<1||row[3]>100||!/^\d+:\d{2}$/.test(row[4]))throw new Error('Ungültige Einsätze oder Spielminuten.');
-  for(let i=5;i<row.length;i++)if(!Number.isFinite(row[i])||!Number.isInteger(row[i])||row[i]< (i===21?-10000:0))throw new Error('Ungültiger Statistikwert in Spalte '+i);
+  for(let i=5;i<row.length;i++)if(!Number.isFinite(row[i])||!Number.isInteger(row[i])||row[i]< ((i===20||i===21)?-10000:0))throw new Error('Ungültiger Statistikwert in Spalte '+i);
   if(row[5]>row[6]||row[7]>row[8]||row[9]>row[10])throw new Error('Trefferzahl größer als Versuche.');
   if(row[11]!==2*row[5]+3*row[7]+row[9])throw new Error('Punktesumme einer Spielerzeile passt nicht zu den Würfen.');
  }
@@ -920,6 +934,44 @@ $('admin-import').addEventListener('change',async e=>{
   $('admin-info').textContent=patch.spieler.length+' Spieler für '+copy.teams[id].n+' lokal übernommen (Quelle: '+patch.quelle+'). Andere Teams unverändert.';
  }catch(error){$('admin-info').textContent='Import abgelehnt: '+error.message;}
  e.target.value='';
+});
+
+// CSV import v3.1: validation and explicit human confirmation before any local write.
+let csvPending=null;
+$('csv-date').value=new Date().toISOString().slice(0,10);
+$('csv-check').addEventListener('click',async()=>{
+ csvPending=null;$('csv-preview').hidden=true;$('csv-confirm').checked=false;
+ try{
+  const f=$('csv-file').files?.[0];if(!f)throw Error('Bitte zuerst eine CSV-Datei auswählen.');
+  if(f.size>2*1024*1024)throw Error('CSV-Datei zu groß (maximal 2 MB).');
+  const b=await f.arrayBuffer();let text=new TextDecoder('utf-8',{fatal:false}).decode(b);
+  if(text.includes('�'))text=new TextDecoder('windows-1252').decode(b);
+  const id=$('csv-team').value,source='Manueller CSV-Export: 2basketballbundesliga.de/teams/kader/?id='+id;
+  const parsed=window.CoachesCSV.parse(text,id,source,$('csv-date').value);
+  const current=await localGet('dataset');if(!current)throw Error('Lokaler Datenbestand fehlt.');
+  validateTeamImport(parsed.patch,current);
+  $('csv-summary').textContent=parsed.patch.spieler.length+' Spieler · '+parsed.totals.punkte+' Punkte · '+parsed.totals.assists+' Assists. '+parsed.conversions+' automatisch zurückgewandelte CSV-Felder. '+parsed.notice;
+  $('csv-players').innerHTML=parsed.details.map(x=>'<tr><td>'+escapeHtml(x.name)+'</td><td>'+x.spiele+'</td><td>'+x.punkte+'</td><td>'+x.assists+'</td><td>'+x.rebounds+'</td><td>'+escapeHtml(x.umgewandelt||'–')+'</td></tr>').join('');
+  csvPending=parsed.patch;$('csv-preview').hidden=false;
+  $('csv-status').textContent='Prüfung erfolgreich. Bitte Originaldaten und Saison kontrollieren und erst dann lokal übernehmen.';
+ }catch(err){$('csv-status').textContent='CSV nicht freigegeben: '+err.message;}
+});
+$('csv-save').addEventListener('click',async()=>{
+ try{
+  if(!csvPending)throw Error('Bitte erst „CSV prüfen“ ausführen.');
+  if(!$('csv-confirm').checked)throw Error('Bestätigung der manuellen Prüfung fehlt.');
+  const current=await localGet('dataset');validateTeamImport(csvPending,current);
+  const updated=structuredClone(current),id=String(csvPending.teamId);
+  updated.spieler[id]=csvPending.spieler;
+  updated.teams[id].kaderStand=csvPending.stand;
+  updated.teams[id].kaderGeladen=new Date().toISOString();
+  updated.teams[id].importQuelle=csvPending.quelle;
+  updated.teams[id].synthetic=false;
+  validateDataset(updated);
+  await localPut('dataset',updated);uebernehmen(updated);renderAdmin();
+  $('csv-status').textContent=csvPending.spieler.length+' Spieler von '+updated.teams[id].n+' erfolgreich in diesem Browser gespeichert.';
+  csvPending=null;$('csv-preview').hidden=true;$('csv-file').value='';
+ }catch(err){$('csv-status').textContent='Speichern abgelehnt: '+err.message;}
 });
 
 // Newly sourced online collection can only start via an authenticated backend and written permission.
