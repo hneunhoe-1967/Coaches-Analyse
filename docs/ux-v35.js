@@ -92,7 +92,7 @@ function manageGroupNodes(){
   return arr;
 }
 function detailGroupNodes(){
-  return [q('h35-report-actions'), q('h34-detail')||q('h35-detail-wrap'), q('h34-report')||q('scouting-report')].filter(Boolean);
+  return [q('h35-report-actions'), q('h34-detail')||q('h35-detail-wrap'), q('h34-report')||q('scouting-report'), q('prog-v357')].filter(Boolean);
 }
 function coachGroupNodes(){
   return [q('analysis')].filter(Boolean);
