@@ -1,0 +1,6 @@
+/* Coaches-Analyse 3.5.9 */
+.v359-account{display:flex;justify-content:flex-end;align-items:center;margin:6px 0 8px;padding:0 4px}
+.v359-account #logout{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line-strong,#aebac6);border-radius:8px;padding:7px 13px;background:var(--surface,#fff);color:var(--ink,#13202d);cursor:pointer}
+.v359-account #logout:hover,.v359-account #logout:focus-visible{outline:2px solid var(--focus,#1c5bb0);outline-offset:2px}
+#cz359-reset{border:1px solid var(--line-strong,#aebac6);background:transparent;color:var(--ink,#13202d);border-radius:8px;padding:9px 12px;cursor:pointer}
+#cz359-reset:hover,#cz359-reset:focus-visible{outline:2px solid var(--focus,#1c5bb0);outline-offset:2px}
