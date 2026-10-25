@@ -48,9 +48,36 @@ function splitAnalysisGrid(){
   wrap.appendChild(grid);
 }
 
+function detachReportSections(){
+  const analysis=q('analysis');
+  if(!analysis || !analysis.parentNode) return;
+  // In v3.4 these sections were wrapped inside #analysis. Move the wrappers
+  // outside it so switching away from the Coach tab cannot hide the Report.
+  const details=q('h34-detail') || q('h35-detail-wrap');
+  const report=q('h34-report') || q('scouting-report');
+  let anchor=analysis;
+  [details,report].forEach(el=>{
+    if(el && analysis.contains(el)){
+      analysis.parentNode.insertBefore(el,anchor.nextSibling);
+      anchor=el;
+    }
+  });
+  if(!q('h35-report-actions')){
+    const actions=document.createElement('section');
+    actions.id='h35-report-actions'; actions.className='h35-report-actions';
+    actions.innerHTML='<div><strong>Scouting & Spielerstatistiken</strong><p>Top 5 des Gegners in den Statistik-Kategorien und individueller Scouting-Report.</p></div><button type="button" id="h35-generate-report">Scouting-Report erstellen</button>';
+    analysis.parentNode.insertBefore(actions,analysis.nextSibling);
+    actions.querySelector('button').addEventListener('click',()=>{
+      const original=q('scout-create');
+      if(original) original.click();
+      const pane=q('h34-report');if(pane) pane.open=true;
+    });
+  }
+}
 function prepareLegacyCompat(){
   compactHeader();
   splitAnalysisGrid();
+  detachReportSections();
   const summary=q('h34-coach-summary'); if(summary) summary.remove();
 }
 
@@ -65,7 +92,7 @@ function manageGroupNodes(){
   return arr;
 }
 function detailGroupNodes(){
-  return [q('h34-report')||q('scouting-report'), q('h34-detail')||q('h35-detail-wrap')].filter(Boolean);
+  return [q('h35-report-actions'), q('h34-detail')||q('h35-detail-wrap'), q('h34-report')||q('scouting-report')].filter(Boolean);
 }
 function coachGroupNodes(){
   return [q('analysis')].filter(Boolean);
