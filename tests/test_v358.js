@@ -1,0 +1,10 @@
+'use strict';const assert=require('node:assert/strict');
+global.CoachPrognose357={cdf:z=>{const sign=z<0?-1:1,x=Math.abs(z)/Math.SQRT2,t=1/(1+.3275911*x);const erf=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-.284496736)*t+.254829592)*t*Math.exp(-x*x);return .5*(1+sign*erf);}};
+const {model,goalBase}=require('../docs/coach-szenario-v358.js');
+const a=[5,0,100,30,110,0,0,344,60,47,100,147,0,0,0,91,0];const b=[4,0,100,28,115,0,0,292,57,74,100,174,0,0,0,69,0];
+const base={expA:67.9,expB:76.4,pWin:0.30,sigma:16};
+const goals=[{id:'opp_oreb',target:15},{id:'opp_3m',target:5},{id:'own_to',target:14}];
+const r=model(base,goals,a,b);assert(r.expA>base.expA);assert(r.expB<base.expB);assert(r.pWin>base.pWin);assert(Math.abs(r.pLose+r.pNarrow+r.pBig-1)<1e-9);assert.equal(goalBase('opp_3m',a,b),7);
+assert.throws(()=>model(base,[goals[0],goals[0],goals[1]],a,b));
+const noImprovement=model(base,[{id:'opp_oreb',target:30},{id:'opp_3m',target:9},{id:'own_to',target:25}],a,b);assert.equal(noImprovement.offense,0);assert.equal(noImprovement.defense,0);
+console.log('5 Szenario-Tests: OK');
