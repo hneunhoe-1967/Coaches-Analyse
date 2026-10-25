@@ -1,0 +1,14 @@
+<div class="csv-import-box" id="bulk-import-box">
+  <h3>ProB Süd · CSV-Sammelimport</h3>
+  <p>Mehrere offizielle Statistikdateien auswählen, jede Datei ausdrücklich einer Mannschaft zuordnen und alle Datensätze vor der lokalen Übernahme gemeinsam prüfen. Keine automatische Zuordnung nach Dateinamen.</p>
+  <div class="bulk-controls">
+    <label>CSV-Dateien <input id="bulk-files" type="file" accept=".csv,text/csv" multiple></label>
+    <label>Datenstand <input id="bulk-date" class="bulk-metadata" type="date"></label>
+    <button id="bulk-check" type="button">Alle CSV prüfen</button>
+  </div>
+  <div class="bulk-table"><table id="bulk-file-list"><thead><tr><th>CSV-Datei</th><th>Mannschaft (manuell)</th><th>Prüfung</th></tr></thead><tbody id="bulk-rows"></tbody></table></div>
+  <label class="bulk-check"><input type="checkbox" id="bulk-overwrite"> Vorhandene Mannschaftsdaten ausdrücklich überschreiben (standardmäßig aus)</label>
+  <label class="bulk-check"><input type="checkbox" id="bulk-confirm"> Ich habe die tatsächlichen Mannschaften, die Quelldateien, die Saison und den Datenstand überprüft.</label>
+  <div class="bulk-controls"><button id="bulk-save" disabled type="button">Geprüfte Mannschaften lokal speichern</button><span id="bulk-status" role="status" aria-live="polite"></span></div>
+  <p><small>Wichtig: Die CSV-Dateien enthalten keine verifizierte Mannschafts-ID. Bitte die Zuordnung selbst kontrollieren. Nur lokale Speicherung; Originaldaten vorab exportieren.</small></p>
+</div>

@@ -1,0 +1,15 @@
+#bulk-import-box{margin-top:18px;padding:18px;border:1px solid var(--line-strong);border-radius:14px;background:var(--surface)}
+#bulk-import-box h3{margin:0 0 7px;font:700 24px var(--font-cond)}
+#bulk-import-box p{line-height:1.4}
+#bulk-import-box input,#bulk-import-box select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line-strong);border-radius:7px;padding:8px;max-width:100%}
+#bulk-import-box button{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line-strong);border-radius:8px;padding:10px 14px;cursor:pointer}
+#bulk-import-box button:disabled{opacity:.5;cursor:not-allowed}
+#bulk-file-list{width:100%;border-collapse:collapse;margin:12px 0}
+#bulk-file-list th,#bulk-file-list td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+#bulk-file-list select{width:100%;min-width:180px}
+#bulk-file-list td:first-child{overflow-wrap:anywhere;max-width:240px}
+#bulk-status{font-weight:600;white-space:pre-wrap}
+#bulk-import-box .bulk-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0}
+#bulk-import-box .bulk-check{display:flex;align-items:center;gap:8px}
+#bulk-import-box .bulk-check input{width:18px;height:18px}
+#bulk-import-box .bulk-table{overflow-x:auto;max-width:100%}

@@ -44,7 +44,7 @@ function parse(text,teamId,quelle,stand){
   details.push({name:full,spiele:games,punkte:pts,assists:ass,rebounds:reb[2],umgewandelt:conversions.join(' · ')});
  }
  if(!players.length||players.length>40)throw Error('Keine oder zu viele Spieler im CSV gefunden.');
- const id=Number(teamId);if(![482,559,591].includes(id))throw Error('Bitte ein unterstütztes Team auswählen.');
+ const id=Number(teamId);if(!Number.isInteger(id)||id<=0)throw Error('Bitte eine gültige Team-ID auswählen.');
  if(!/^\d{4}-\d{2}-\d{2}$/.test(stand)||Number.isNaN(Date.parse(stand)))throw Error('Bitte den Datenstand als YYYY-MM-DD eingeben.');
  if(!quelle||quelle.length<8)throw Error('Quellenangabe erforderlich.');
  return {patch:{format:'coaches-team-players-v1',teamId:id,quelle,stand,spieler:players},details,conversions:altered, totals:{punkte:players.reduce((a,r)=>a+r[11],0),assists:players.reduce((a,r)=>a+r[12],0)},notice:'Ursprüngliche CSV-Datumswerte wurden anhand ihrer Schreibweise und der mathematischen Statistikregeln rekonstruiert. Quelle und Saison bitte vor dem Import verifizieren.'};

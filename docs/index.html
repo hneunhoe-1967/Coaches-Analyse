@@ -253,6 +253,7 @@ select:disabled{opacity:.55}
 <link rel="stylesheet" href="coach-v352.css">
 <script src="coach-v352.js" defer></script>
 <link rel="stylesheet" href="ux-v354-ui.css">
+<link rel="stylesheet" href="bulk-import-v355.css">
 </head>
 <body>
 
@@ -305,6 +306,21 @@ select:disabled{opacity:.55}
     <div id="csv-preview" hidden><p id="csv-summary"></p><div class="admin-table"><table><thead><tr><th>Spieler</th><th>Spiele</th><th>Punkte</th><th>Assists</th><th>Rebounds</th><th>Rekonstruktionen</th></tr></thead><tbody id="csv-players"></tbody></table></div><label class="csv-confirm"><input id="csv-confirm" type="checkbox"> Ich habe Mannschaft, Saison, Datenstand und die rekonstruierten Werte anhand der Quelle geprüft.</label><button type="button" id="csv-save">Geprüfte Spieler lokal übernehmen</button></div>
     <p class="admin-state" id="csv-status" role="status"></p>
   </div>
+<div class="csv-import-box" id="bulk-import-box">
+  <h3>ProB Süd · CSV-Sammelimport</h3>
+  <p>Mehrere offizielle Statistikdateien auswählen, jede Datei ausdrücklich einer Mannschaft zuordnen und alle Datensätze vor der lokalen Übernahme gemeinsam prüfen. Keine automatische Zuordnung nach Dateinamen.</p>
+  <div class="bulk-controls">
+    <label>CSV-Dateien <input id="bulk-files" type="file" accept=".csv,text/csv" multiple></label>
+    <label>Datenstand <input id="bulk-date" class="bulk-metadata" type="date"></label>
+    <button id="bulk-check" type="button">Alle CSV prüfen</button>
+  </div>
+  <div class="bulk-table"><table id="bulk-file-list"><thead><tr><th>CSV-Datei</th><th>Mannschaft (manuell)</th><th>Prüfung</th></tr></thead><tbody id="bulk-rows"></tbody></table></div>
+  <label class="bulk-check"><input type="checkbox" id="bulk-overwrite"> Vorhandene Mannschaftsdaten ausdrücklich überschreiben (standardmäßig aus)</label>
+  <label class="bulk-check"><input type="checkbox" id="bulk-confirm"> Ich habe die tatsächlichen Mannschaften, die Quelldateien, die Saison und den Datenstand überprüft.</label>
+  <div class="bulk-controls"><button id="bulk-save" disabled type="button">Geprüfte Mannschaften lokal speichern</button><span id="bulk-status" role="status" aria-live="polite"></span></div>
+  <p><small>Wichtig: Die CSV-Dateien enthalten keine verifizierte Mannschafts-ID. Bitte die Zuordnung selbst kontrollieren. Nur lokale Speicherung; Originaldaten vorab exportieren.</small></p>
+</div>
+
   <p id="admin-info" class="admin-state" role="status" aria-live="polite">Online-Erfassung weiterhin gesperrt, bis Nutzungsbedingungen geklärt sind. Nur zulässig bereitgestellte Statistikdateien verwenden.</p>
   <div id="admin-detail" hidden>
     <div class="admin-table"><table><thead><tr><th>Team</th><th>Liga</th><th>Teamstatistik</th><th>Spieler</th><th>Quelle / Zustand</th></tr></thead><tbody id="admin-teams"></tbody></table></div>
@@ -421,6 +437,7 @@ select:disabled{opacity:.55}
 
 </div>
 <script src="csv-import.js"></script>
+<script src="bulk-import-v355.js"></script>
 <script>
 /* ---------- Konfiguration ---------- */
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -1066,6 +1083,76 @@ $('csv-save').addEventListener('click',async()=>{
   csvPending=null;$('csv-preview').hidden=true;$('csv-file').value='';
  }catch(err){$('csv-status').textContent='Speichern abgelehnt: '+err.message;}
 });
+
+// COACHES_BULK_355_BEGIN
+(function(){
+ const container=$('bulk-import-box');if(!container)return;
+ const filesInput=$('bulk-files'), tableBody=$('bulk-rows'), msg=$('bulk-status');
+ const previewBtn=$('bulk-check'), saveBtn=$('bulk-save');
+ const agree=$('bulk-confirm'), overwrite=$('bulk-overwrite');
+ let staging=null;
+ const fmt=window.CoachesBulkUI;
+ const proBSouth=(data)=>Object.entries(data.teams||{}).filter(([id,t])=>{
+   const ln=(data.ligen?.[t.l]?.name||t.l||'').toLowerCase();return ln.includes('prob')&&ln.includes('süd');
+ }).map(([id,t])=>({id,name:t.n})).sort((a,b)=>a.name.localeCompare(b.name,'de'));
+ async function loadTeams(){const data=await localGet('dataset');if(!data)throw Error('Lokaler Datenbestand fehlt. Bitte zuerst Daten laden.');const teams=proBSouth(data);if(!teams.length)throw Error('Keine ProB-Süd-Teams gefunden.');return {data,teams};}
+ function reset(){staging=null;agree.checked=false;saveBtn.disabled=true;msg.textContent='';}
+ filesInput.addEventListener('change',async()=>{
+   reset();try{
+     const {data,teams}=await loadTeams();
+     const files=Array.from(filesInput.files||[]);
+     if(!files.length){tableBody.innerHTML='';return;}
+     if(files.length>18)throw Error('Maximal 18 CSV-Dateien pro Durchgang.');
+     tableBody.innerHTML=files.map((f,i)=>'<tr><td>'+fmt.escape(f.name)+'</td><td><select class="bulk-team" data-index="'+i+'" aria-label="Mannschaft für '+fmt.escape(f.name)+'">'+fmt.options(teams)+'</select></td><td class="bulk-result">Noch nicht geprüft</td></tr>').join('');
+     msg.textContent=files.length+' Dateien gewählt. Für jede Datei die richtige Mannschaft ausdrücklich auswählen. Dateiname ist kein Identitätsnachweis.';
+   }catch(err){msg.textContent='Auswahlfehler: '+err.message;}
+ });
+ container.addEventListener('change',e=>{if(e.target.matches('.bulk-team,.bulk-metadata'))reset();});
+ overwrite.addEventListener('change',reset);
+ $('bulk-date').value=new Date().toLocaleDateString('sv-SE');
+ previewBtn.addEventListener('click',async()=>{
+  reset();try{
+   if(!window.CoachesCSV)throw Error('CSV-Parser nicht geladen.');
+   const {data,teams}=await loadTeams();const allowed=new Set(teams.map(t=>String(t.id)));
+   const files=Array.from(filesInput.files||[]);if(!files.length)throw Error('Zuerst CSV-Dateien wählen.');
+   const sels=Array.from(container.querySelectorAll('.bulk-team'));
+   if(sels.length!==files.length)throw Error('Bitte Dateien erneut auswählen.');
+   const ids=sels.map(s=>String(s.value));if(ids.some(x=>!allowed.has(x)))throw Error('Jeder CSV-Datei eine gültige ProB-Süd-Mannschaft zuordnen.');
+   if(new Set(ids).size!==ids.length)throw Error('Eine Mannschaft darf nicht mehrfach in einem Import vorkommen.');
+   const date=$('bulk-date').value;if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(Date.parse(date)))throw Error('Gültigen Datenstand eingeben.');
+   const patches=[];for(let i=0;i<files.length;i++){
+     const f=files[i];if(f.size>2*1024*1024)throw Error(f.name+': größer als 2 MB.');
+     const b=await f.arrayBuffer();let csv=new TextDecoder('utf-8').decode(b);if(csv.includes('�'))csv=new TextDecoder('windows-1252').decode(b);
+     const id=ids[i];const has=Array.isArray(data.spieler?.[id])&&data.spieler[id].length>0;
+     if(has&&!overwrite.checked)throw Error(data.teams[id].n+': Kader bereits vorhanden. Nicht überschreiben; bestehende Mannschaft abwählen oder Überschreiben ausdrücklich erlauben.');
+     const source='Manueller CSV-Export: 2basketballbundesliga.de/teams/kader/?id='+id;
+     const parsed=window.CoachesCSV.parse(csv,id,source,date);validateTeamImport(parsed.patch,data);
+     patches.push(parsed.patch);
+     sels[i].closest('tr').querySelector('.bulk-result').textContent='OK: '+parsed.patch.spieler.length+' Spieler';
+   }
+   // Complete dataset validation before any write.
+   const staged=structuredClone(data);
+   for(const patch of patches){const id=String(patch.teamId);staged.spieler[id]=patch.spieler;staged.teams[id].kaderStand=patch.stand;staged.teams[id].kaderGeladen=new Date().toISOString();staged.teams[id].importQuelle=patch.quelle;staged.teams[id].synthetic=false;}
+   validateDataset(staged);staging={patches,ids,date};saveBtn.disabled=false;
+   msg.textContent=patches.length+' CSV-Dateien geprüft, alle Team-IDs eindeutig und der neue Datenbestand gültig. Es wurde noch nichts gespeichert. Jetzt Originalquelle und Teamzuordnung kontrollieren und bestätigen.';
+  }catch(err){staging=null;saveBtn.disabled=true;msg.textContent='Prüfung abgebrochen: '+err.message+' Es wurde nichts gespeichert.';}
+ });
+ saveBtn.addEventListener('click',async()=>{
+   try{
+     if(!staging)throw Error('Erst die CSV-Prüfung abschließen.');if(!agree.checked)throw Error('Bitte die Prüfung ausdrücklich bestätigen.');
+     const latest=await loadTeams();const current=latest.data;
+     const update=structuredClone(current);
+     for(const patch of staging.patches){const id=String(patch.teamId);validateTeamImport(patch,current);
+       if(Array.isArray(current.spieler?.[id])&&current.spieler[id].length&&!overwrite.checked)throw Error(current.teams[id].n+': existierende Daten dürfen nicht überschrieben werden.');
+       update.spieler[id]=patch.spieler;update.teams[id].kaderStand=patch.stand;update.teams[id].kaderGeladen=new Date().toISOString();update.teams[id].importQuelle=patch.quelle;update.teams[id].synthetic=false;
+     }
+     validateDataset(update);await localPut('dataset',update);uebernehmen(update);renderAdmin();
+     const count=staging.patches.length;staging=null;saveBtn.disabled=true;agree.checked=false;filesInput.value='';tableBody.innerHTML='';
+     msg.textContent=count+' Mannschaften erfolgreich im aktuellen Browser gespeichert. Andere Kader bleiben unverändert. Bitte jetzt „Daten exportieren“ für die Sicherung verwenden.';
+   }catch(err){msg.textContent='Speichern abgelehnt: '+err.message;}
+ });
+})();
+// COACHES_BULK_355_END
 
 // Newly sourced online collection can only start via an authenticated backend and written permission.
 // Deliberately disabled in this demonstration, regardless of any client-side setting.
