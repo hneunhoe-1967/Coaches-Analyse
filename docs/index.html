@@ -250,6 +250,8 @@ select:disabled{opacity:.55}
 <link rel="stylesheet" href="ux-v34.css">
 <link rel="stylesheet" href="ux-v35.css">
 <link rel="stylesheet" href="ux-v351-fix.css">
+<link rel="stylesheet" href="coach-v352.css">
+<script src="coach-v352.js" defer></script>
 </head>
 <body>
 
@@ -667,17 +669,28 @@ const CATS = [
 ];
 
 function renderLeaders(){
-  const id = state.opp, t = TEAMS[id];
+  const id = Number(state.opp), t = TEAMS[id];
+  // COACH352_CHECK: Reject roster collisions across different team IDs.
+  const selectedRows = (DATA && DATA.spieler && DATA.spieler[id]) || PLAYERS[id];
+  const checked = window.Coach352 ? window.Coach352.validate(DATA || {spieler:PLAYERS}, id) : {valid:true};
+  if (!checked.valid) {
+    $('lead-src').href = kaderUrl(id);
+    $('lead-sub').textContent = `${t.n} · Kaderdaten prüfen`;
+    $('leaders').innerHTML = '<div class="empty h352-alert"><strong>Datenprüfung: Top 5 vorübergehend gesperrt.</strong><p id="h352-reason"></p><p>Bitte die offizielle CSV-Datei für diesen Gegner erneut importieren und die Zuordnung prüfen.</p></div>';
+    $('h352-reason').textContent = checked.message;
+    $('lead-note').textContent = 'Keine Spieler eines anderen Teams als aktuelle Top 5 anzeigen.';
+    return;
+  }
   $('lead-src').href = kaderUrl(id);
   $('lead-sub').textContent = `${t.n}, Durchschnitt pro Spiel`;
-  if (!PLAYERS[id]){
+  if (!selectedRows || !selectedRows.length){
     const avail = Object.keys(PLAYERS).map(Number).filter(x => TEAMS[x].l === state.league).map(x => TEAMS[x].n);
     $('leaders').innerHTML = `<div class="empty"><p>Für ${t.n} liegen beim letzten Einlesen keine Spielerwerte vor. Sie werden beim nächsten Einlesen ergänzt.</p>
       <a href="${kaderUrl(id)}" target="_blank" rel="noopener">Kader und Spielerstatistik auf 2basketballbundesliga.de öffnen</a></div>`;
     $('lead-note').textContent = '';
     return;
   }
-  const all = PLAYERS[id].map(parsePlayer);
+  const all = selectedRows.map(parsePlayer);
   const pg = Math.max(...all.map(p => p.g)), tg = ROW[id].g;
   const minG = Math.max(2, Math.ceil(pg * 0.4));
   const pool = all.filter(p => p.g >= minG && p.flag !== 'left');
