@@ -1,0 +1,26 @@
+/* Henrik's Analyse-App für Coaches - optional UX layer v3.4 */
+:root{--h34-orange:#ff9d4d;--h34-blue:#9ac2f5}
+.h34-hero{max-width:1280px;margin:16px auto 8px;border:1px solid #294366;border-radius:18px;overflow:hidden;background:linear-gradient(110deg,#061324 5%,#102d51 70%,#071522);display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,32%);min-height:152px;color:#fff;box-shadow:0 12px 28px #0002}
+.h34-copy{padding:23px clamp(16px,3vw,38px);align-self:center}.h34-kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#ffad70;font-weight:700}
+.h34-hero h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,4vw,48px);line-height:1.05;color:#fff;margin:7px 0}.h34-hero h1 span{color:#ff9d4d}
+.h34-hero p{margin:0;color:#e3edf8;font-size:clamp(13px,1.55vw,17px)}.h34-art{position:relative;min-height:150px;background:#0e2c4b url('assets/coach-hero.png') center center/cover no-repeat}
+.h34-art:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#061324,transparent 40%)}
+.h34-version{margin-top:9px!important;font-size:12px!important;color:#a9c3dd!important}
+.h34-nav{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:6px;max-width:1280px;margin:8px auto 12px;padding:8px;border:1px solid #29405c;border-radius:12px;background:#0c1f33ed;backdrop-filter:blur(9px);overflow-x:auto;white-space:nowrap}
+.h34-nav a{padding:9px 13px;border-radius:8px;text-decoration:none;color:#d8e8fa!important;font-weight:600;font-size:13px}.h34-nav a:hover,.h34-nav a:focus-visible{background:#173d61;color:#fff!important}.h34-nav a:first-child{background:#f49a48;color:#111e2b!important}
+.h34-fold{border:1px solid var(--line,#33465a);border-radius:12px;overflow:hidden;margin:12px auto;max-width:1280px;background:var(--surface,#101e2c)}
+.h34-fold>summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:21px;color:var(--ink,#e7eef7)}
+.h34-fold>summary::-webkit-details-marker{display:none}.h34-fold>summary:after{content:'⌄';font-family:system-ui;font-size:24px;transition:transform .15s}.h34-fold[open]>summary:after{transform:rotate(180deg)}
+.h34-fold>summary:hover{background:rgba(130,167,208,.09)}.h34-fold>.h34-fold-content{padding:0 16px 16px}.h34-fold .data-admin{margin:0;max-width:none}
+.h34-fold[data-h34='manage']{margin-top:10px}.h34-fold[data-h34='manage']>.h34-fold-content>.wrap{max-width:none;padding:0}
+.h34-fold[data-h34='overview']{margin-top:12px}.h34-fold[data-h34='overview'] .overview{margin:0}
+.h34-fold[data-h34='report'] .scouting-report{margin:0}.h34-fold[data-h34='report']>.h34-fold-content{padding:0 12px 18px}
+.h34-summary{border:1px solid #31516f;border-radius:14px;padding:16px;margin:16px 0;background:linear-gradient(115deg,#122941,#0a1726);color:#e7f0fb}.h34-summary h3{font-family:'Barlow Condensed',sans-serif;font-size:23px;color:#fff;margin:0 0 12px}.h34-sumgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.h34-sumgrid article{padding:12px;background:#102338;border-radius:9px;border-left:3px solid #5d9be6;min-width:0}
+.h34-sumgrid article:nth-child(2){border-left-color:#f49a48}.h34-sumgrid article:nth-child(3){border-left-color:#7fae95}.h34-sumgrid strong{display:block;color:#fff;font-size:14px;margin-bottom:5px}.h34-sumgrid p{font-size:13px;margin:0;color:#d3e1ef;line-height:1.45}
+.h34-summary .h34-note{margin:10px 0 0;font-size:11px;color:#a8bdce}
+.h34-role{display:inline-block;margin:2px 4px 2px 0;font-size:11px!important;border:1px solid #537aa5;border-radius:999px;padding:2px 7px;color:#b8d6fa;background:rgba(40,87,139,.22)}
+/* Override old fixed table viewport; normal page scrolling */
+.admin-table{max-height:none!important;overflow-y:visible!important}.data-admin .admin-table{height:auto!important}.h34-fold .overview,.h34-fold section{max-width:100%}
+#analysis{scroll-margin-top:75px}#scouting-report{scroll-margin-top:75px}#data-admin{scroll-margin-top:75px}
+@media(max-width:720px){.h34-hero{grid-template-columns:1fr}.h34-art{display:none}.h34-sumgrid{grid-template-columns:1fr}.h34-nav a{padding:9px}.h34-fold>.h34-fold-content{padding:0 7px 10px}}
+@media print{.h34-nav,.h34-hero,.h34-fold>summary{display:none!important}.h34-fold>.h34-fold-content{display:block!important}.h34-fold{border:0!important}.h34-summary{break-inside:avoid}}

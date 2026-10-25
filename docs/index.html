@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Coaches-Analyse</title>
+<title>Henrik’s Analyse-App für Coaches</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -247,6 +247,7 @@ select:disabled{opacity:.55}
 @media print{@page{size:A4;margin:12mm}body{background:white!important;color:#161616!important}body>*:not(main){display:none!important}main>*:not(#analysis){display:none!important}#analysis>*:not(#scouting-report){display:none!important}#analysis,#scouting-report{display:block!important;margin:0!important;padding:0!important;border:0!important;color:#161616!important;background:#fff!important}#scout-print{display:none!important}.scout-kpis>div,.scout-tactics li{background:white!important;break-inside:avoid}.scout-cols{grid-template-columns:1fr 1fr!important}.scout-tactics{grid-template-columns:repeat(3,1fr)!important}.scout-header h2{font-size:20px!important}.scouting-report h3{font-size:15px!important}.scout-kpis strong{font-size:15px!important}.scout-table{font-size:11px!important}.scout-caveats{font-size:10px!important}}
 
 </style>
+<link rel="stylesheet" href="ux-v34.css">
 </head>
 <body>
 
@@ -1056,5 +1057,6 @@ if(sessionStorage.getItem('coach-unlocked')==='1')activate();
 <script src="scouting-report.js"></script>
 <script src="scouting-ui.js"></script>
 <script src="scouting-v33.js"></script>
+<script src="ux-v34.js"></script>
 </body>
 </html>
