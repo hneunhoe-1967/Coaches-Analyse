@@ -220,6 +220,12 @@ select:disabled{opacity:.55}
 .admin-state{color:var(--muted);font-size:13px}.admin-error{color:#d57443;font-weight:600}
 .csv-import-box{border:1px solid var(--line-strong);border-radius:12px;padding:14px;margin:14px 0}.csv-import-box h3{margin:0 0 8px}.csv-import-box input,.csv-import-box select{font:inherit;max-width:100%;padding:7px;background:var(--bg);color:var(--ink);border:1px solid var(--line-strong);border-radius:7px}.csv-import-box button{border:1px solid var(--line-strong);background:var(--bg);color:var(--ink);padding:10px;border-radius:8px;cursor:pointer}.csv-import-box .csv-confirm{display:block;margin:13px 0}.csv-import-box .admin-table{max-height:300px}
 
+/* COACHES_V332_TABLE: Gesamte Ligatabelle statt innerem Scrollbalken. */
+#admin-detail .admin-table{max-height:none;overflow-y:visible;overflow-x:auto}
+#admin-detail .admin-table table{width:100%;border-collapse:collapse}
+#admin-detail .admin-table th,#admin-detail .admin-table td{padding:7px 9px}
+@media (max-width:650px){#admin-detail .admin-table th,#admin-detail .admin-table td{padding:6px;font-size:12px}}
+
 /* Version 3.2 Scouting Report */
 .scout-launch{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 22px}
 .scout-launch button,.scout-print{background:var(--own);color:#fff;border:0;border-radius:8px;padding:11px 16px;cursor:pointer;font-weight:600}
@@ -860,6 +866,15 @@ $('auth-form').addEventListener('submit',async e=>{
  }catch(error){$('auth-status').textContent='Lokales Speichern nicht möglich: '+error.message;}
 });
 $('logout').addEventListener('click',()=>{sessionStorage.removeItem('coach-unlocked');location.reload();});
+// COACHES_V332_BACKUP: automatische, herunterladbare Sicherung vor jeder Aktualisierung.
+function backupCoachDataset(data){
+ const json=JSON.stringify(data,null,2);
+ const blob=new Blob([json],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='coaches-analyse-backup-vor-aktualisierung.json';
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),10000);
+}
 async function syncDataset(){
  const b=$('local-sync');b.disabled=true;try{
   $('local-info').textContent='Prüfe veröffentlichte JSON-Datei …';
@@ -881,6 +896,14 @@ async function syncDataset(){
    }
   }
   validateDataset(d);
+  // COACHES_V332_CHECK: never silently drop already saved player rosters.
+  if(current){
+   const vanished=Object.keys(current.teams||{}).filter(id=>
+    Array.isArray(current.spieler?.[id]) && current.spieler[id].length > 0 &&
+    (!Array.isArray(d.spieler?.[id]) || d.spieler[id].length===0));
+   if(vanished.length)throw new Error('Aktualisierung abgebrochen: '+vanished.length+' vorhandene Kader würden verloren gehen. Bitte Daten sichern und prüfen.');
+   backupCoachDataset(current);
+  }
   await localPut('dataset',d);uebernehmen(d);renderAdmin();
   $('local-stat').textContent=`${count} Teams · lokal: ${fmtZeit(d.stand)}`;
   $('local-info').textContent=(current&&current.stand===d.stand?'Kein neuerer veröffentlichter Datenstand.':'Veröffentlichte Teamdaten wurden lokal gespeichert.')+' '+retained+' lokal importierte Mannschaftskader beibehalten. Hinweis: Bei unterschiedlichen Datenständen Spieler- und Teamstatistik prüfen.';
