@@ -275,6 +275,8 @@ select:disabled{opacity:.55}
   <p class="sec-sub">Prüfe je Mannschaft die Datenabdeckung. Ein manuell importierter Kader wird ausschließlich in diesem Browser gespeichert.</p>
   <div class="admin-counters" id="admin-counters" aria-live="polite"></div>
   <div class="admin-actions">
+    <label for="admin-league-filter">Liga der Mannschaftsübersicht <select id="admin-league-filter" aria-label="Liga für die Mannschaftsübersicht"><option value="">Alle Ligen</option></select></label>
+    <span id="admin-league-count" role="status" aria-live="polite"></span>
     <button id="admin-toggle" type="button" aria-expanded="false">Mannschaften anzeigen</button>
     <button id="admin-template" type="button">JSON-Vorlage für Reutlingen herunterladen</button>
     <label>Spielerstatistik importieren <input id="admin-import" type="file" accept=".json,application/json" hidden></label>
@@ -864,9 +866,24 @@ async function syncDataset(){
   const d=await ladeDaten(true);const count=validateDataset(d);
   const current=await localGet('dataset');
   if(current&&Date.parse(d.stand)<Date.parse(current.stand))throw new Error('Die veröffentlichte Version ist älter als die lokale Version. Keine Überschreibung.');
+  // Keep any locally imported roster and its provenance. Refuse outdated or incompatible rosters only by explicit manual review, never silent deletion.
+  let retained=0;
+  if(current){
+   for(const [id,oldTeam] of Object.entries(current.teams||{})){
+    const oldRows=current.spieler?.[id];
+    if(!d.teams[id] || !Array.isArray(oldRows) || !oldRows.length)continue;
+    if(!oldTeam.kaderStand && !oldTeam.importQuelle)continue;
+    d.spieler[id]=structuredClone(oldRows);
+    for(const key of ['kaderStand','kaderGeladen','importQuelle','synthetic']){
+     if(Object.prototype.hasOwnProperty.call(oldTeam,key))d.teams[id][key]=oldTeam[key];
+    }
+    retained++;
+   }
+  }
+  validateDataset(d);
   await localPut('dataset',d);uebernehmen(d);renderAdmin();
   $('local-stat').textContent=`${count} Teams · lokal: ${fmtZeit(d.stand)}`;
-  $('local-info').textContent=current&&current.stand===d.stand?'Keine neuere Version vorhanden.':'Veröffentlichte Daten wurden geprüft und lokal gespeichert.';
+  $('local-info').textContent=(current&&current.stand===d.stand?'Kein neuerer veröffentlichter Datenstand.':'Veröffentlichte Teamdaten wurden lokal gespeichert.')+' '+retained+' lokal importierte Mannschaftskader beibehalten. Hinweis: Bei unterschiedlichen Datenständen Spieler- und Teamstatistik prüfen.';
  }catch(e){$('local-info').textContent='Aktualisierung fehlgeschlagen: '+e.message;}finally{b.disabled=false;}
 }
 window.coachesLocalSync=syncDataset;
@@ -899,7 +916,16 @@ function renderAdmin(){
  const countPlayer=ids.reduce((n,id)=>n+adminStatusFor(id).count,0);
  const counters=[['Mannschaften',ids.length],['Mit Spielerwerten',present.length],['Ohne Spielerwerte',ids.length-present.length],['Spieler-Einträge',countPlayer],['Spiele',games],['Testkennzeichen',test.length]];
  $('admin-counters').innerHTML=counters.map(([title,value])=>'<div class="admin-counter"><b>'+value+'</b><span>'+title+'</span></div>').join('');
- const rows=ids.sort((a,b)=>DATA.teams[a].n.localeCompare(DATA.teams[b].n,'de'));
+ const filter=$('admin-league-filter');
+ if(filter){
+  const previous=filter.value;
+  const leagues=Object.entries(DATA.ligen||{}).map(([key,val])=>[key,val.name||key]).sort((a,b)=>a[1].localeCompare(b[1],'de'));
+  filter.innerHTML='<option value="">Alle Ligen</option>'+leagues.map(([key,name])=>'<option value="'+escapeHtml(key)+'">'+escapeHtml(name)+'</option>').join('');
+  filter.value=leagues.some(([key])=>key===previous)?previous:'';
+ }
+ const selected=filter?.value||'';
+ const rows=ids.filter(id=>!selected||String(DATA.teams[id].l)===selected).sort((a,b)=>DATA.teams[a].n.localeCompare(DATA.teams[b].n,'de'));
+ if($('admin-league-count')) $('admin-league-count').textContent=rows.length+' Mannschaften in dieser Ansicht';
  $('admin-teams').innerHTML=rows.map(id=>{
    const t=DATA.teams[id],status=adminStatusFor(id),known=Array.isArray(DATA.teamstat[id])&&DATA.teamstat[id].length>=17;
    const league=DATA.ligen[t.l]?.name||t.l||'–';
@@ -907,6 +933,7 @@ function renderAdmin(){
    return '<tr><td>'+escapeHtml(t.n)+'</td><td>'+escapeHtml(league)+'</td><td>'+(known?'vorhanden':'fehlt')+'</td><td>'+(status.count?status.count+' Spieler':'fehlen')+'</td><td>'+(status.synthetic?'SYNTHE­TISCH / nur Test':escapeHtml(last))+'</td></tr>';
  }).join('');
 }
+$('admin-league-filter').addEventListener('change',renderAdmin);
 $('admin-toggle').addEventListener('click',()=>{
  const detail=$('admin-detail');detail.hidden=!detail.hidden;$('admin-toggle').setAttribute('aria-expanded',String(!detail.hidden));
  $('admin-toggle').textContent=detail.hidden?'Mannschaften anzeigen':'Mannschaften ausblenden';
