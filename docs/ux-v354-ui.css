@@ -1,0 +1,60 @@
+/* v3.5.4 UI refresh: pencil artwork + iPad-aligned controls. Cosmetic only. */
+body.h35-active .h35-hero, body.h35-active .h34-hero {
+  background:linear-gradient(115deg,#071525 0%,#122b45 68%,#192d3f 100%);
+}
+body.h35-active .h35-hero .h34-art,
+body.h35-active .h34-hero .h34-art,
+body.h35-active .h35-art {
+  background-color:#eceae5;
+  background-image:url('assets/coach-hero-sketch.png');
+  background-size:cover;
+  background-position:44% center;
+  filter:grayscale(100%);
+}
+body.h35-active .h35-hero .h34-art::before,
+body.h35-active .h34-hero .h34-art::before,
+body.h35-active .h35-art::before {
+  background:linear-gradient(90deg,rgba(12,27,42,.5),transparent 19%);
+}
+/* Keep the header drawing visible on tablets, stack text above it on narrow screens. */
+@media (max-width:760px){
+  body.h35-active .h35-hero .h34-art,
+  body.h35-active .h34-hero .h34-art,
+  body.h35-active .h35-art {display:block;min-height:138px}
+}
+/* Fix inherited .admin-actions flex sizing: league selection remains a single clean grid row. */
+body.h35-active #data-admin .admin-actions:has(#admin-league-filter){
+ display:grid;grid-template-columns:minmax(220px,340px) minmax(115px,1fr) auto auto;gap:12px;align-items:end;
+}
+body.h35-active #data-admin .admin-actions:has(#admin-league-filter)>label:has(#admin-league-filter){
+ display:grid;gap:6px;align-content:end;width:100%;min-width:0;
+}
+body.h35-active #data-admin #admin-league-filter{width:100%;min-width:0;margin:0;box-sizing:border-box;min-height:42px}
+body.h35-active #data-admin .admin-actions:has(#admin-league-filter)>#admin-league-count{align-self:center}
+/* Align all CSV inputs to their own labeled columns, with no mid-row wrapping. */
+body.h35-active #csv-import-box>.admin-actions{
+ display:grid;grid-template-columns:minmax(170px,1.15fr) minmax(145px,.7fr) minmax(250px,1.6fr) auto;
+ gap:12px;align-items:end;
+}
+body.h35-active #csv-import-box>.admin-actions>label{
+ display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;
+ gap:7px;min-width:0;width:100%;box-sizing:border-box;
+}
+body.h35-active #csv-import-box>.admin-actions>label select,
+body.h35-active #csv-import-box>.admin-actions>label input{width:100%;max-width:100%;box-sizing:border-box;min-width:0;min-height:42px;margin:0}
+body.h35-active #csv-import-box>.admin-actions>button{min-height:42px;white-space:nowrap}
+@media(max-width:1120px){
+ body.h35-active #data-admin .admin-actions:has(#admin-league-filter){grid-template-columns:minmax(190px,1fr) minmax(120px,.7fr) repeat(2,auto)}
+ body.h35-active #csv-import-box>.admin-actions{grid-template-columns:minmax(180px,1fr) minmax(130px,.7fr)}
+ body.h35-active #csv-import-box>.admin-actions>label:has(#csv-file){grid-column:1 / -1}
+ body.h35-active #csv-import-box>.admin-actions>button{justify-self:start}
+}
+@media(max-width:680px){
+ body.h35-active #data-admin .admin-actions:has(#admin-league-filter),
+ body.h35-active #csv-import-box>.admin-actions{grid-template-columns:minmax(0,1fr)}
+ body.h35-active #csv-import-box>.admin-actions>label:has(#csv-file){grid-column:auto}
+ body.h35-active #data-admin #admin-league-count{justify-self:start}
+}
+@media print{
+ body.h35-active .h35-hero .h34-art,body.h35-active .h34-hero .h34-art{filter:grayscale(100%)}
+}
