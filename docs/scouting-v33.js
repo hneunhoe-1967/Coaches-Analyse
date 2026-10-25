@@ -49,7 +49,8 @@ function roles(rows,teamGames){
 function gameplan(data,own,opp){
  const qa=inspect(data,own),qb=inspect(data,opp),my=data.teamstat?.[own],op=data.teamstat?.[opp];
  if(!Array.isArray(my)||!Array.isArray(op)||my.length<17||op.length<17)return {quality:[qa,qb],roles:[],actions:[],warnings:['Teamstatistiken fehlen.']};
- const g=Math.max(1,op[0]), og=Math.max(1,my[0]),r=roles(data.spieler?.[opp],op[0]);
+ const checked=root.Coach352?root.Coach352.validate(data,Number(opp)):{valid:true};
+ const g=Math.max(1,op[0]), og=Math.max(1,my[0]),r=roles(checked.valid?data.spieler?.[opp]:[],op[0]);
  const actions=[];let n=0;
  function add(title,evidence,plan){actions.push({title,evidence,plan,rank:++n});}
  const topReb=r.find(x=>x.tags.includes('Rebounder'));
@@ -69,11 +70,13 @@ const id=x=>document.getElementById(x);
 const style=document.createElement('style');style.textContent=`.c33box{margin-top:20px;border-top:1px solid var(--line,#333);padding-top:14px}.c33cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.c33panel{padding:12px;border:1px solid var(--line,#444);border-radius:10px}.c33panel h4{margin:0 0 8px}.c33panel p{margin:6px 0}.c33muted{opacity:.75;font-size:.87em}.c33-warning{border-left:3px solid #d77c36;padding-left:10px}`;document.head.appendChild(style);
 function render(){const content=id('scout-content'), sec=id('scouting-report');if(!content||!sec||sec.hidden||typeof DATA==='undefined'||typeof state==='undefined'||!state.own||!state.opp)return;
  const old=id('c33-extra');old?.remove();let report;try{report=gameplan(DATA,state.own,state.opp);}catch(e){return;}
+ const rosterCheck=root.Coach352?root.Coach352.validate(DATA,Number(state.opp)):{valid:true};
+ if(!rosterCheck.valid){report.warnings.unshift('ACHTUNG: '+rosterCheck.message);}
  const out=document.createElement('div');out.id='c33-extra';out.className='c33box';
  const quality=report.quality.map(q=>`<div class="c33panel"><h4>${escape(q.name)} · ${q.level==='ok'?'OK':q.level==='warn'?'Hinweis':'Prüfen'}</h4><p>${q.playerCount||0} Spieler, ${q.teamGames||0} Teamspiele</p>${[...q.issues,...(q.notes||[])].map(x=>`<p class="c33-warning">${escape(x)}</p>`).join('')||'<p>Keine Auffälligkeiten innerhalb der verfügbaren Prüfungen.</p>'}</div>`).join('');
- const players=report.roles.slice(0,7).map(p=>`<tr><td>${escape(p.name)}${p.lowSample?' *':''}</td><td>${escape(p.tags.join(', '))}</td><td>${fmt(p.pts)}</td><td>${fmt(p.ast)}</td><td>${fmt(p.reb)}</td></tr>`).join('');
+ const players=(rosterCheck.valid?report.roles:[]).slice(0,7).map(p=>`<tr><td>${escape(p.name)}${p.lowSample?' *':''}</td><td>${escape(p.tags.join(', '))}</td><td>${fmt(p.pts)}</td><td>${fmt(p.ast)}</td><td>${fmt(p.reb)}</td></tr>`).join('');
  const actions=report.actions.slice(0,3).map(p=>`<div class="c33panel"><h4>${escape(p.title)}</h4><p>${escape(p.evidence)}</p><p>${escape(p.plan)}</p></div>`).join('');
- out.innerHTML=`<h3>Datenqualität · Version 3.3</h3><div class="c33cols">${quality}</div><h3>Spielerrollen des Gegners</h3><div style="overflow-x:auto"><table class="scout-table"><thead><tr><th>Spieler</th><th>Statistische Rolle</th><th>PTS</th><th>AST</th><th>REB</th></tr></thead><tbody>${players||'<tr><td colspan="5">Keine Spielerdaten vorhanden.</td></tr>'}</tbody></table></div><h3>Gameplan · Drei priorisierte Prüfaufträge</h3><div class="c33cols">${actions||'<p>Kein regelbasierter Prüfauftrag verfügbar.</p>'}</div><p class="c33muted">${report.warnings.map(escape).join(' ')}</p>`;
+ out.innerHTML=`${rosterCheck.valid?'':`<p class="c33-warning"><strong>Kaderzuordnung prüfen:</strong> ${escape(rosterCheck.message)} Spielerbezogene Gameplan-Texte und Rollen ausgeblendet.</p>`}<h3>Datenqualität · Version 3.3</h3><div class="c33cols">${quality}</div><h3>Spielerrollen des Gegners</h3><div style="overflow-x:auto"><table class="scout-table"><thead><tr><th>Spieler</th><th>Statistische Rolle</th><th>PTS</th><th>AST</th><th>REB</th></tr></thead><tbody>${players||'<tr><td colspan="5">Keine Spielerdaten vorhanden.</td></tr>'}</tbody></table></div><h3>Gameplan · Drei priorisierte Prüfaufträge</h3><div class="c33cols">${actions||'<p>Kein regelbasierter Prüfauftrag verfügbar.</p>'}</div><p class="c33muted">${report.warnings.map(escape).join(' ')}</p>`;
  content.appendChild(out);
 }
 // Nach dem bestehenden Event-Handler des Scouting-Reports nachzeichnen.

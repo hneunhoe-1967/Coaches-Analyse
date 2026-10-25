@@ -6,6 +6,22 @@ function validate(data,teamId){
  const src=data&&data.spieler||{};
  const rows=src[teamId];
  if(!Array.isArray(rows)||rows.length===0)return {valid:true,message:'Keine Spielerwerte vorhanden.'};
+ // 3.5.3: Known, historically observed roster conflicts. These are anomaly
+ // indicators only; a verified fresh CSV remains the authoritative source.
+ const known={
+  'langen':['savion brown','nico wenzl','erik neunhoeffer','benjamin koppke'],
+  'reutlingen':['noah kamdem','cooper creek','carlos hidalgo guijo','henk droste']
+ };
+ const teamName=String(data?.teams?.[teamId]?.n||'').toLowerCase();
+ const normalized=new Set(rows.map(row=>Array.isArray(row)?String(row[1]||'').replace('|',' ').trim().toLowerCase():'').filter(Boolean));
+ const matchKey=Object.keys(known).find(k=>teamName.includes(k));
+ if(matchKey){
+  const otherKeys=Object.keys(known).filter(k=>k!==matchKey);
+  for(const otherKey of otherKeys){
+   const foreign=known[otherKey].filter(n=>normalized.has(n));
+   if(foreign.length>=2){return {valid:false,message:`Kaderidentität unplausibel: ${foreign.join(', ')} gehören nach dem bekannten Vergleichsbestand zu ${otherKey}, nicht zu ${teamName}. Offizielle Team-CSV erneut prüfen.`};}
+  }
+ }
  const names=rosterNames(rows);
  if(names.size<rows.length)return {valid:false,message:'Doppelte oder ungültige Spielernamen im ausgewählten Kader.'};
  if(rows.some(row=>!Array.isArray(row)||row.length<22))return {valid:false,message:'Unvollständige Spielerzeilen.'};

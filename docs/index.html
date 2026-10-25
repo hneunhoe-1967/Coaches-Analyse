@@ -682,7 +682,9 @@ function renderLeaders(){
     return;
   }
   $('lead-src').href = kaderUrl(id);
-  $('lead-sub').textContent = `${t.n}, Durchschnitt pro Spiel`;
+  const date=t.kaderStand||KADER_STAND[id]||'nicht dokumentiert';
+  const source=t.importQuelle?' · lokal importierte CSV':' · veröffentlichter Datenstand';
+  $('lead-sub').textContent = `${t.n}, Durchschnitt pro Spiel · Kaderstand: ${date}${source}`;
   if (!selectedRows || !selectedRows.length){
     const avail = Object.keys(PLAYERS).map(Number).filter(x => TEAMS[x].l === state.league).map(x => TEAMS[x].n);
     $('leaders').innerHTML = `<div class="empty"><p>Für ${t.n} liegen beim letzten Einlesen keine Spielerwerte vor. Sie werden beim nächsten Einlesen ergänzt.</p>
