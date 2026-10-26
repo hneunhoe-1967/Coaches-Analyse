@@ -11,7 +11,7 @@
  }
  function addHero(){
    const shell=q('app-shell');if(!shell||q('h34-hero'))return;
-   const el=document.createElement('div');el.innerHTML=`<section id="h34-hero" class="h34-hero" aria-label="Henrik’s Analyse-App für Coaches"><div class="h34-copy"><div class="h34-kicker">Basketball · Daten · Scouting</div><h1>Henrik’s <span>Analyse-App</span> für Coaches</h1><p>Aktuell: Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p><p class="h34-version">Version 3.4 · Alle Berechnungen basieren auf dem verfügbaren Datenstand</p></div><div class="h34-art" role="img" aria-label="Basketball und stilisierte Statistikgrafik"></div></section>`;
+   const el=document.createElement('div');el.innerHTML=`<section id="h34-hero" class="h34-hero" aria-label="Henriks Analyse-App für Coaches"><div class="h34-copy"><div class="h34-kicker">Basketball · Daten · Scouting</div><h1>Henriks <span>Analyse-App</span> für Coaches</h1><p>Aktuell: Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p><p class="h34-version">Version 3.4 · Alle Berechnungen basieren auf dem verfügbaren Datenstand</p></div><div class="h34-art" role="img" aria-label="Basketball und stilisierte Statistikgrafik"></div></section>`;
    shell.insertBefore(el.firstElementChild,shell.firstChild);
    const nav=document.createElement('nav');nav.className='h34-nav';nav.setAttribute('aria-label','Schnellnavigation');nav.innerHTML='<a href="#h34-hero">Start</a><a href="#h34-pick">Spiel auswählen</a><a href="#analysis">Matchup</a><a href="#h34-coach-summary">Coach Summary</a><a href="#h34-report">Scouting-Report</a><a href="#h34-detail">Statistiken</a><a href="#h34-manage">Datenverwaltung</a>';
    shell.insertBefore(nav,el.nextSibling);

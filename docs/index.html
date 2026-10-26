@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Henrik’s Analyse-App für Coaches</title>
+<title>Henriks Analyse-App für Coaches</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
@@ -257,6 +257,7 @@ select:disabled{opacity:.55}
 <link rel="stylesheet" href="prognose-v357.css">
 <link rel="stylesheet" href="coachziele-v357.css">
 <link rel="stylesheet" href="coach-szenario-v358.css">
+<link rel="stylesheet" href="ux-v3510.css">
 </head>
 <body>
 
@@ -282,7 +283,7 @@ select:disabled{opacity:.55}
   <button id="local-sync" type="button">Veröffentlichte Daten prüfen &amp; lokal aktualisieren</button>
   <button id="central-start" type="button" disabled title="Erst nach Freigabe und Backend-Konfiguration möglich">Neue Online-Erfassung anstoßen</button>
   <button id="export-json" type="button">Daten exportieren</button>
-  <label style="cursor:pointer">JSON importieren <input id="import-json" type="file" accept=".json,application/json" hidden></label>
+  <label style="cursor:pointer">Vollständigen Datenbestand importieren (JSON) <input id="import-json" type="file" accept=".json,application/json" hidden></label>
   <button id="logout" type="button">Abmelden</button>
   <small id="local-info">Lokale Speicherung mit IndexedDB. Import ohne Freigabe gesperrt; ausschließlich mitgelieferte Testdaten verwenden.</small>
 </section></div>
@@ -295,7 +296,7 @@ select:disabled{opacity:.55}
     <span id="admin-league-count" role="status" aria-live="polite"></span>
     <button id="admin-toggle" type="button" aria-expanded="false">Mannschaften anzeigen</button>
     <button id="admin-template" type="button">JSON-Vorlage für Reutlingen herunterladen</button>
-    <label>Spielerstatistik importieren <input id="admin-import" type="file" accept=".json,application/json" hidden></label>
+    <label>Spielerstatistik einer Mannschaft importieren <input id="admin-import" type="file" accept=".json,application/json" hidden></label>
   </div>
   <div class="csv-import-box" id="csv-import-box">
     <h3>CSV-Spielerstatistiken importieren (lokal)</h3>
@@ -722,7 +723,7 @@ function renderLeaders(){
     ? `<p class="warn">Die Kader-Seite enthält Spielerwerte aus erst ${pg} von ${tg} Spielen${KADER_STAND[id] ? ` (Stand ${KADER_STAND[id]})` : ''}. Die Top 5 können sich noch verschieben.</p>`
     : '';
   $('leaders').innerHTML = warn + `<div class="leader-grid">` + CATS.map(c => {
-    const top = pool.map(p => ({p, v:c.v(p)})).filter(x => x.v > 0).sort((a,b) => b.v - a.v).slice(0,5);
+    const top = pool.map(p => ({p, v:c.v(p)})).filter(x => x.v > 0).sort((a,b) => b.v - a.v).slice(0,4);
     const show = c.show || f1;
     let shown = 0;
     return `<section class="leader"><h3>${c.t} <span>${c.u}</span></h3><ol>` + top.map((x,i) => {
@@ -1172,5 +1173,7 @@ if(sessionStorage.getItem('coach-unlocked')==='1')activate();
 <script src="coach-szenario-v358.js"></script>
 <link rel="stylesheet" href="logout-v359.css">
 <script src="logout-v359.js"></script>
+<link rel="stylesheet" href="ux-v3511.css">
+<script src="ux-v3511.js"></script>
 </body>
 </html>

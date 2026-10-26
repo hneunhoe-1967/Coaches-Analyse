@@ -1,0 +1,15 @@
+/* 3.5.10 – fließender Übergang vom blauen Textbereich zur weißen Sketch-Grafik. */
+body.h35-active #h34-hero.h35-hero, body.h35-active #h35-hero.h35-hero, body.h35-active .h34-hero, body.h35-active .h35-hero {
+  background:linear-gradient(100deg,#071525 0%,#112c4b 42%,#31516a 60%,#bdcad2 77%,#f9fafb 100%);
+}
+/* Die Grafik bleibt unverändert, ihr linker Rand geht fließend in den Hintergrund über. */
+body.h35-active #h34-hero.h35-hero .h34-art, body.h35-active #h35-hero.h35-hero .h35-art,
+body.h35-active .h35-hero .h34-art,body.h35-active .h34-hero .h34-art,body.h35-active .h35-art {
+  background-color:#f9fafb;
+}
+body.h35-active #h34-hero.h35-hero .h34-art::before, body.h35-active #h35-hero.h35-hero .h35-art::before,
+body.h35-active .h35-hero .h34-art::before,body.h35-active .h34-hero .h34-art::before,body.h35-active .h35-art::before {
+  background:linear-gradient(to right,#31516a 0%,rgba(83,112,133,.92) 14%,rgba(183,200,212,.55) 35%,rgba(250,251,252,0) 74%);
+}
+/* Breite Importbeschriftungen können auf Tablets umbrechen statt auszuragen. */
+#app-shell label:has(> #import-json),#app-shell label:has(> #admin-import) {display:inline-flex;align-items:center;white-space:normal;line-height:1.35}

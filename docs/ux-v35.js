@@ -18,13 +18,13 @@ function ensureHero(){
   const h34=q('h34-hero');
   if(h34){
     h34.classList.add('h35-hero');
-    const ver=qs('.h34-version',h34); if(ver) ver.textContent='Version 3.5 · Arena Dark Mode · Neue Navigation · kompaktere Coach-Ansicht';
+    const ver=qs('.h34-version',h34); if(ver) ver.textContent='Version 3.5.11 · Vergleich · Report · Coach-Ziele';
     return h34;
   }
   if(q('h35-hero')) return q('h35-hero');
   const wrap=document.createElement('section');
-  wrap.id='h35-hero'; wrap.className='h35-hero'; wrap.setAttribute('aria-label','Henrik’s Analyse-App für Coaches');
-  wrap.innerHTML=`<div class="h35-copy"><div class="h35-kicker">Basketball · Daten · Scouting</div><h1>Henrik’s <span>Analyse-App</span> für Coaches</h1><p>Aktuell: Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p><p class="h35-version">Version 3.5 · Arena Dark Mode · Neue Navigation · kompaktere Coach-Ansicht</p></div><div class="h35-art" role="img" aria-label="Basketball, Taktik und Statistiken"></div>`;
+  wrap.id='h35-hero'; wrap.className='h35-hero'; wrap.setAttribute('aria-label','Henriks Analyse-App für Coaches');
+  wrap.innerHTML=`<div class="h35-copy"><div class="h35-kicker">Basketball · Daten · Scouting</div><h1>Henriks <span>Analyse-App</span> für Coaches</h1><p>Aktuell: Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p><p class="h35-version">Version 3.5.11 · Vergleich · Report · Coach-Ziele</p></div><div class="h35-art" role="img" aria-label="Basketball, Taktik und Statistiken"></div>`;
   shell.insertBefore(wrap,shell.firstChild);
   return wrap;
 }
@@ -91,8 +91,11 @@ function manageGroupNodes(){
   if(admin) arr.push(admin);
   return arr;
 }
+function compareGroupNodes(){
+  return [q('h34-detail')||q('h35-detail-wrap')].filter(Boolean);
+}
 function detailGroupNodes(){
-  return [q('h35-report-actions'), q('h34-detail')||q('h35-detail-wrap'), q('h34-report')||q('scouting-report'), q('prog-v357')].filter(Boolean);
+  return [q('h35-report-actions'),q('h34-report')||q('scouting-report'),q('prog-v357')].filter(Boolean);
 }
 function coachGroupNodes(){
   return [q('analysis')].filter(Boolean);
@@ -113,8 +116,9 @@ function ensureTabs(){
   const tabs=[
     ['spiel','Spiel','Auswahl'],
     ['uebersicht','Übersicht','Spiele & Tabelle'],
-    ['coach','Coach','Summary & Matchup'],
-    ['report','Report','Scouting & Stats'],
+    ['vergleich','Vergleichsstatistik','Werte & Top-Listen'],
+    ['report','Report','Prognose & Scouting'],
+    ['coach','Coach','Ziele & Szenario'],
     ['daten','Daten','Import & Verwaltung']
   ];
   nav.innerHTML=tabs.map(([id,label,sub])=>`<button type="button" class="h35-tab" data-tab="${id}">${label}<span>${sub}</span></button>`).join('');
@@ -127,8 +131,9 @@ function showTab(tab,save){
   const map={
     spiel:pickGroupNodes(),
     uebersicht:overviewGroupNodes(),
-    coach:coachGroupNodes(),
+    vergleich:compareGroupNodes(),
     report:detailGroupNodes(),
+    coach:coachGroupNodes(),
     daten:manageGroupNodes()
   };
   const all=[...new Set(Object.values(map).flat())];
@@ -142,7 +147,7 @@ function showTab(tab,save){
 function chooseDefaultTab(){
   try{const saved=localStorage.getItem('coachApp35Tab'); if(saved) return saved;}catch(_e){}
   const s=st();
-  if(s?.opp) return 'coach';
+  if(s?.opp) return 'report';
   if(s?.own) return 'uebersicht';
   return 'spiel';
 }
@@ -223,7 +228,7 @@ function sectionHeadings(){
 
 function attachReactions(){
   ['league','own','opp'].forEach(id=>q(id)?.addEventListener('change',()=>{
-    setTimeout(()=>{ renderSummary(); if(id==='opp'&&st()?.opp) showTab('coach',true); else if(id==='own'&&st()?.own) showTab('uebersicht',true); },20);
+    setTimeout(()=>{ renderSummary(); if(id==='opp'&&st()?.opp) showTab('report',true); else if(id==='own'&&st()?.own) showTab('uebersicht',true); },20);
   }));
   const analysis=q('analysis'); if(analysis) new MutationObserver(()=>setTimeout(renderSummary,0)).observe(analysis,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
   const report=q('scouting-report'); if(report) new MutationObserver(()=>{ if(!report.hidden && document.body.dataset.h35Tab==='coach') showTab('report',false); }).observe(report,{attributes:true,attributeFilter:['hidden']});

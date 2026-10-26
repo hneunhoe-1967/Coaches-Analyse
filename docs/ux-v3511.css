@@ -1,0 +1,6 @@
+/* v3.5.11 six-tab navigation and harmless reset action */
+body.h35-active #h35-tabs{grid-template-columns:repeat(6,minmax(0,1fr));}
+body.h35-active #v3511-reset{border:1px solid #f0a068;color:#fff;background:#6b3440;border-radius:10px;padding:10px 14px;margin:12px;cursor:pointer;font-weight:700}
+body.h35-active #v3511-status{display:inline-block;font-size:12px;color:var(--muted);padding:4px 10px}
+@media(max-width:850px){body.h35-active #h35-tabs{grid-template-columns:repeat(3,minmax(0,1fr));}}
+@media(max-width:480px){body.h35-active #h35-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}body.h35-active #h35-tabs .h35-tab{font-size:11px;padding:8px 3px;min-width:0}}
