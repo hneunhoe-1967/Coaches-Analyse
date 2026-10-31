@@ -1,0 +1,5 @@
+/* Additional export controls; no changes to existing layout or stored data. */
+.pdf-export-v3512{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 16px;margin:10px 12px 12px 0;border:1px solid #4277a5;border-radius:9px;background:#173d63;color:#fff;font-family:inherit;font-size:14px;font-weight:600;line-height:1.3;cursor:pointer;}
+.pdf-export-v3512:hover{background:#235888}.pdf-export-v3512:focus-visible{outline:3px solid #ffaf6f;outline-offset:2px}
+#h35-report-actions .pdf-export-v3512{white-space:normal}
+@media print{.pdf-export-v3512{display:none!important}}
