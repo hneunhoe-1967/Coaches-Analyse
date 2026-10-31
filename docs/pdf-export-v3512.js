@@ -38,12 +38,58 @@
       .scout-tactics li span {display:block;} .scout-small,.foot,.scout-caveats {font-size:11px;color:#526579;}
       details {display:block!important;} details>summary {font-weight:bold;margin:8px 0;} .scouting-report {display:block!important;}
       footer {margin-top:25px;border-top:1px solid #bcc9d7;padding-top:9px;color:#637383;font-size:10px;}
+      /* COACH_PDF_V3513_COMPARE_LAYOUT */
+      /* 3.5.13: Drucklayout des direkten Vergleichs – wie in der Web-App. */
+      /* Die Daten und Markup-Struktur werden aus der App übernommen. */
+      .cmp-cols,.cmp-row {
+        display:grid!important;
+        grid-template-columns:104px minmax(0,1fr) 104px!important;
+        width:100%;align-items:center;column-gap:0;
+      }
+      .cmp-cols {padding:7px 2px 9px;border-bottom:2px solid #b7c8d7;
+        font-size:17px;font-weight:800;letter-spacing:.04em;}
+      .cmp-cols .o {color:#145ca4;text-align:left}
+      .cmp-cols .g {color:#c45b29;text-align:right}
+      .cmp-grp {font-size:13px;margin:14px 0 3px;padding:7px 9px 5px;
+        color:#173c60;border-left:4px solid #174f81;background:#edf3f8;
+        break-after:avoid-page;page-break-after:avoid;}
+      .cmp-row {padding:8px 1px!important;border-bottom:1px solid #e0e6ec!important;
+        border-top:0!important;min-height:55px;break-inside:avoid-page;page-break-inside:avoid;}
+      .cmp-val {min-width:0;line-height:1.2;color:#263749;}
+      .cmp-val b {display:block;font-size:18px;line-height:1.2;font-weight:650;
+        font-variant-numeric:tabular-nums;white-space:nowrap;}
+      .cmp-val small {display:block;color:#627284;font-size:9px;line-height:1.27;margin-top:3px;}
+      .cmp-val small br {display:block;content:"";margin:1px 0}
+      .cmp-val.g{text-align:right}
+      .cmp-val.o.win b{color:#145ca4;font-weight:800}
+      .cmp-val.g.win b{color:#c45b29;font-weight:800}
+      .cmp-mid {text-align:center;min-width:0;padding:0 10px;}
+      .cmp-label {font-size:12px;font-weight:700;line-height:1.23;color:#1d344b;}
+      .cmp-label em {font-size:10px;color:#697a8a;font-weight:400;font-style:normal;}
+      .bars {display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+        gap:4px;margin-top:7px;width:100%;}
+      .half {display:flex;height:7px;background:#e3e8ee;border-radius:4px;
+        overflow:hidden;min-width:0;}
+      .half.l {justify-content:flex-end;}
+      .fill {display:block;height:100%;width:var(--w);max-width:100%;border-radius:3px;}
+      .fill.o{background:#1c65b0}.fill.g{background:#d16d37}.fill.n{background:#8092a4}
+      /* Druckvorschau und PDF verwenden feste Spalten auch auf schmalen Tablets. */
+      @media(max-width:600px){.cmp-cols,.cmp-row{grid-template-columns:85px minmax(0,1fr) 85px!important}
+      .cmp-val b{font-size:15px}.cmp-mid{padding:0 5px}.cmp-label{font-size:11px}}
+      @media print {
+        .cmp-cols,.cmp-row{grid-template-columns:104px minmax(0,1fr) 104px!important;}
+        .cmp-row{display:grid!important;}
+        .cmp-grp,.cmp-cols,.cmp-row,.bars,.fill { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+        .cmp-grp{break-after:avoid-page;}
+        .cmp-row{break-inside:avoid-page;}
+        #compare,.analysis-grid{display:block!important;}
+      }
       @media print { body {padding:0;} .toolbar {display:none!important;} a {color:inherit;text-decoration:none;} }
       @media(max-width:600px){.leader-grid,.scout-cols {grid-template-columns:1fr;}}
     `;
     return `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${clean(name)} – ${clean(matchup.own)} gegen ${clean(matchup.opp)}</title><style>${css}</style></head>
-      <body><div class="toolbar"><span>PDF-Vorschau · Version 3.5.12</span><button type="button" class="pdf-preview-print" onclick="window.print()">Drucken / als PDF sichern</button></div>
-      <h1>${clean(name)}</h1><div class="meta">Henriks Analyse-App für Coaches · Version 3.5.12<br>${clean(matchup.own)} gegen ${clean(matchup.opp)} · Saison ${clean(matchup.season)} · Datenstand ${clean(matchup.stand)}</div>
+      <body><div class="toolbar"><span>PDF-Vorschau · Version 3.5.13</span><button type="button" class="pdf-preview-print" onclick="window.print()">Drucken / als PDF sichern</button></div>
+      <h1>${clean(name)}</h1><div class="meta">Henriks Analyse-App für Coaches · Version 3.5.13<br>${clean(matchup.own)} gegen ${clean(matchup.opp)} · Saison ${clean(matchup.season)} · Datenstand ${clean(matchup.stand)}</div>
       ${parts.map(p=>`<div class="section">${p}</div>`).join('')}
       <footer>Lokale Datenbasis. Statistiken und Modellannahmen auf Aktualität prüfen. Prognosen sind keine kalibrierten Wahrscheinlichkeiten.</footer></body></html>`;
   }
