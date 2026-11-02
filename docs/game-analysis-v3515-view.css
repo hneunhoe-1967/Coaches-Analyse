@@ -1,0 +1,20 @@
+/* 3.5.15: Nur Report-Anzeige; keine Auswirkung auf Statistik oder Datenimport. */
+.ga15-report{margin:20px 0;padding:16px;border:1px solid #c7d5e3;border-radius:12px;background:#fff;color:#1b2e40}
+.ga15-report h2{margin:0 0 8px;font-size:1.35rem}.ga15-report h4{margin:17px 0 8px;font-size:1rem}
+.ga15-note,.ga15-intro{color:#526677;font-size:.9rem;line-height:1.5;margin:8px 0 12px}
+.ga15-main,.ga15-sub{border:1px solid #cad7e3;border-radius:9px;background:#fff;overflow:hidden;margin:10px 0}
+.ga15-main>summary,.ga15-sub>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;cursor:pointer;font-weight:700;list-style:none}
+.ga15-main>summary{background:#e9f0f7;color:#163d62;font-size:1.03rem}
+.ga15-sub>summary{background:#f5f8fb;font-size:.93rem;font-weight:600}
+.ga15-main>summary::-webkit-details-marker,.ga15-sub>summary::-webkit-details-marker{display:none}
+.ga15-main>summary::before,.ga15-sub>summary::before{content:'▸';font-size:1.05rem;flex-shrink:0;color:#2d668e}
+.ga15-main[open]>summary::before,.ga15-sub[open]>summary::before{content:'▾'}
+.ga15-main>summary span,.ga15-sub>summary span{flex:1;min-width:0}
+.ga15-main>summary small,.ga15-sub>summary small{font-size:.74rem;color:#586e7e;font-weight:500;text-align:right;max-width:48%}
+.ga15-content{padding:5px 14px 17px}
+.ga15-tasks{padding:0 0 0 18px;margin:10px 0 16px}
+.ga15-task{margin:12px 0;line-height:1.4;break-inside:avoid-page}
+.ga15-task>b{display:block}.ga15-task>p{margin:5px 0;font-size:.9rem}.ga15-source{display:block;font-size:.78rem;color:#627486}
+.ga15-evidence,.ga15-measure{font-size:.81rem!important;color:#485d72}.ga15-report p{overflow-wrap:anywhere}
+@media(max-width:600px){.ga15-report{padding:11px}.ga15-main>summary,.ga15-sub>summary{padding:11px 9px;gap:6px}.ga15-main>summary small,.ga15-sub>summary small{max-width:40%}}
+@media print{.ga15-report details{break-inside:auto}.ga15-report details[open]>summary{break-after:avoid-page}.ga15-main,.ga15-sub{overflow:visible}.ga15-main>summary,.ga15-sub>summary{background:#f1f4f7!important}}

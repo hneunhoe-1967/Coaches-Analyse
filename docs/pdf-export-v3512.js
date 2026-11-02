@@ -14,7 +14,18 @@
   function printableHtml(kind, matchup, parts) {
     const name = kind === 'vergleich' ? 'Vergleichsstatistik' : 'Spielprognose & Scouting-Report';
     const css = `
-      @page { size: A4; margin: 13mm; }
+      /* GA3515_PDF_STYLE */
+      .ga15-report {border:1px solid #ccd8e4;border-radius:9px;padding:14px;margin-top:20px;}
+      .ga15-report h2 {margin:0 0 10px;}
+      .ga15-main,.ga15-sub {display:block;border:1px solid #dae3ec;border-radius:6px;margin:8px 0;padding:6px 10px;break-inside:auto;}
+      .ga15-main>summary,.ga15-sub>summary {display:block!important;font-size:14px;font-weight:bold;background:#eaf0f6;padding:5px 6px;break-after:avoid-page;}
+      .ga15-sub>summary{background:#f3f6f9;font-size:12px;}
+      .ga15-content{display:block;padding:7px 6px;}
+      .ga15-tasks{padding-left:20px;}.ga15-task{margin:8px 0;break-inside:avoid-page;}
+      .ga15-source{display:block;font-size:10px;color:#586f82;}
+      .ga15-evidence,.ga15-measure,.ga15-note{font-size:11px;color:#556a7d;}
+      .ga15-report details[open]>*:not(summary){display:block;}
+            @page { size: A4; margin: 13mm; }
       * { box-sizing: border-box; } body { margin:0; padding:20px; font:13px/1.4 Arial,Helvetica,sans-serif; color:#172537; background:#fff; }
       .toolbar { display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;background:#e9f1f9;border-radius:9px;margin-bottom:20px; }
       button { border:0;background:#164b81;color:white;padding:11px 16px;border-radius:6px;font-weight:bold;cursor:pointer; }
@@ -98,6 +109,8 @@
     const clone=element.cloneNode(true);
     clone.removeAttribute('hidden');clone.classList.remove('h35-tab-hide');
     clone.querySelectorAll('[hidden],.h35-tab-hide').forEach(x=>{x.removeAttribute('hidden');x.classList.remove('h35-tab-hide');});
+    /* GA3515_FORCE_DETAILS_OPEN: PDF enthält auch eingeklappte Aufgaben. */
+    clone.querySelectorAll('#ga14-report details').forEach(x=>x.open=true);
     clone.querySelectorAll('button,script,input,select,textarea').forEach(x=>x.remove());
     clone.querySelectorAll('[id]').forEach(x=>x.removeAttribute('id'));
     return keepContainer ? clone.outerHTML : clone.innerHTML;
