@@ -38,6 +38,7 @@
       .scout-tactics li span {display:block;} .scout-small,.foot,.scout-caveats {font-size:11px;color:#526579;}
       details {display:block!important;} details>summary {font-weight:bold;margin:8px 0;} .scouting-report {display:block!important;}
       footer {margin-top:25px;border-top:1px solid #bcc9d7;padding-top:9px;color:#637383;font-size:10px;}
+      .ga14-report{border-top:2px solid #1c65b0;padding-top:12px;margin-top:18px}.ga14-review{border:1px solid #cbd8e5;border-radius:7px;padding:12px;margin:12px 0}.ga14-review h4{font-size:14px;color:#123c65}.ga14-review ol{padding-left:21px}.ga14-review li{break-inside:avoid-page;border-bottom:1px solid #e1e6ed;padding:7px 0}.ga14-review li p{margin:3px 0}.ga14-review li small,.ga14-meta,.ga14-note{display:block;font-size:10px;color:#596b7d}
       /* COACH_PDF_V3513_COMPARE_LAYOUT */
       /* 3.5.13: Drucklayout des direkten Vergleichs – wie in der Web-App. */
       /* Die Daten und Markup-Struktur werden aus der App übernommen. */
@@ -112,6 +113,8 @@
       // Re-use the current application's report renderer to avoid exporting stale content.
       const scout=$('scouting-report');
       if(!scout?.querySelector('.scout-header')) $('scout-create')?.click();
+      /* COACH_GAME_ANALYSIS_3514_PDF */
+      window.CoachGameAnalysis3514?.appendToReport();
       const forecast=$('prog-v357'), report=$('scouting-report');
       if(forecast && forecast.innerHTML.trim()) parts.push(cloneContent(forecast,true));
       if(report && report.querySelector('.scout-header')) parts.push(cloneContent(report,true));

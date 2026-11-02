@@ -1,0 +1,98 @@
+{
+  "schema": "coaches-game-analysis-v1",
+  "id": "bbc-coburg-vs-tv-langen-2026-11-01",
+  "teamId": "559",
+  "teamName": "BBC Coburg",
+  "opponent": "TV Langen",
+  "date": "2026-11-01",
+  "score": "72:85",
+  "title": "Analyse des BBC-Coburg-Boxscores gegen TV Langen",
+  "sourceFile": "Analyse des BBC-Coburg-Boxscores gegen TV Langen.docx",
+  "sourceType": "Traineranalyse / Textauswertung",
+  "status": "redaktionell aus hochgeladenem Dokument abgeleitet; Trainerprüfung erforderlich",
+  "summary": "Gegen TV Langen zeigte Coburg vor allem Probleme bei Guard-Entscheidungen, Assists/Turnovers, Wurfauswahl und Fouls. 25/70 FG, 6/24 Dreier, 10 Assists, 19 Turnover, 27 Fouls; 42 Rebounds waren nicht die Hauptbaustelle.",
+  "teamTasks": [
+    {
+      "title": "Ballkontrolle und Ballbewegung verbessern",
+      "action": "Guards in Pick-and-Roll-Reads, Passfenstern nach Drives und schnellen Extra-Pässen trainieren. Schwierige Abschlüsse spät in der Possession vermeiden.",
+      "evidence": "10 Assists und 19 Turnover gegen Langen.",
+      "measure": "Assists, Turnover, AST/TO-Verhältnis pro Spiel."
+    },
+    {
+      "title": "Frontcourt konsequenter einbinden",
+      "action": "Horns, High-Low, Short Roll und Inside-Out nutzen; Bigs in guten Positionen finden und Anschluss-Pässe trainieren.",
+      "evidence": "Herzog, Neunhoeffer und Cosic trafen gemeinsam 14/26 aus dem Feld; drei Spieler nahmen 48/70 Würfe.",
+      "measure": "Würfe und Treffer der Forwards sowie Assists nach Inside-Out."
+    },
+    {
+      "title": "Defensive ohne unnötige Fouls",
+      "action": "Point-of-Attack-Defense, rechtzeitige Help-Rotation, vertikale Ringverteidigung und Closeouts ohne Reach-ins üben.",
+      "evidence": "27 persönliche Fouls; Cosic und Abra jeweils fünf.",
+      "measure": "Teamfouls und frühe persönliche Fouls von Schlüsselspielern."
+    },
+    {
+      "title": "Mehr Catch-and-Shoot-Bedrohung",
+      "action": "Corner-Spacing, Kick-out-Pässe und offene Catch-and-Shoot-Dreier gezielt vorbereiten.",
+      "evidence": "6/24 Dreier (25 %) gegen TV Langen.",
+      "measure": "Offene Dreier, Catch-and-Shoot-Versuche und Dreierquote."
+    }
+  ],
+  "playerTasks": [
+    {
+      "player": "Savion Brown",
+      "title": "Effizientere Wurfauswahl",
+      "action": "Weniger schwierige Self-Creation-Zweier; mehr Pick-and-Roll, Closeout-Attacks und Catch-and-Shoot.",
+      "evidence": "19 Punkte bei 7/19 FG, 4 Assists und 3 Turnovern.",
+      "measure": "FG-Quote, Abschlüsse im Paint, Assist/Turnover."
+    },
+    {
+      "player": "Tim Herzog",
+      "title": "Playmaking aus dem Frontcourt",
+      "action": "Short-Roll-Pässe und High-Post-Entscheidungen trainieren, um Guards zu entlasten.",
+      "evidence": "18 Punkte (7/14 FG), 9 Rebounds, 3 Turnover und 4 Fouls.",
+      "measure": "Assists, Turnover nach Short Roll und Fouls."
+    },
+    {
+      "player": "Erik Neunhoeffer",
+      "title": "Perimeter- und Dreier-Skills erweitern",
+      "action": "Offene Catch-and-Shoot-Dreier, Fußarbeit am Perimeter und Entscheidungen nach dem Rebound üben.",
+      "evidence": "8 Punkte bei 3/5 FG, 10 Rebounds (5 offensiv); kein Dreier genommen.",
+      "measure": "Offene Dreier-Versuche, Dreierquote und Rebounds."
+    },
+    {
+      "player": "Musa Abra",
+      "title": "Point-Guard-Entscheidungen",
+      "action": "Pick-and-Roll-Reads, Passfenster nach Drives, Stop-and-Go-Tempo und Auswahl guter Abschlüsse trainieren.",
+      "evidence": "13 Punkte bei 3/15 FG, 2 Assists, 4 Turnovern und 5 Fouls.",
+      "measure": "AST/TO-Verhältnis, Turnover, Wurfauswahl und Fouls."
+    },
+    {
+      "player": "Leo Cosic",
+      "title": "Foulmanagement ohne offensive Zurückhaltung",
+      "action": "Saubere vertikale Ringverteidigung, Stellung vor Kontakt und Fouls bei Help-Defense reduzieren.",
+      "evidence": "9 Punkte bei 4/7 FG, aber 5 Fouls in 30 Minuten.",
+      "measure": "Fouls je Spiel, Spielminuten und effiziente Abschlüsse."
+    },
+    {
+      "player": "Benjamin Koppke",
+      "title": "Finishing im Kontakt",
+      "action": "Abschlüsse am Ring nach Offensivrebounds, Fußarbeit und schnelle Entscheidungen unter Kontakt üben.",
+      "evidence": "4 Punkte bei 1/5 FG und 8 Rebounds (4 offensiv) in 17 Minuten.",
+      "measure": "Zweierquote am Ring und Punkte nach Offensivrebounds."
+    },
+    {
+      "player": "Felix Egger",
+      "title": "Off-Ball-Aktivität",
+      "action": "Aus Blocks sprinten, Backdoor-Cuts, Corner-Spacing und sofortige Closeout-Attacken üben.",
+      "evidence": "0 Punkte bei 0/2 FG in 13 Minuten; 3 Rebounds, kein Turnover.",
+      "measure": "Aktive Cuts, Catch-and-Shoot-Versuche und Off-Ball-Abschlüsse."
+    },
+    {
+      "player": "Pepe Levin Lahr",
+      "title": "Angriff sicher organisieren",
+      "action": "Pick-and-Roll-Steuerung und Entscheidungen unter Druck verbessern; sichere erste und zweite Passoption einüben.",
+      "evidence": "1 Punkt, 0/3 FG, 1 Assist, 2 Turnover in knapp 13 Minuten.",
+      "measure": "Assists, Turnover und gelungene PnR-Vorteile."
+    }
+  ]
+}
