@@ -1,0 +1,7 @@
+/* V3.5.18: styling follows existing dark blue 3.5.17 layout. */
+.cp18-panel .cp18-context{margin:14px 0;padding:0;border:1px solid #56738d;border-radius:8px;background:#274661;overflow:hidden}
+.cp18-context>summary{cursor:pointer;padding:13px;font-weight:700;color:#eaf5ff;background:#305473}
+.cp18-context>div{padding:13px;color:#dce8f2;font-size:.91rem;line-height:1.55}
+.cp18-context li{margin:5px 0}.cp18-task{padding:11px 14px;border-top:1px solid #4d6b85;color:#edf5fb}
+.cp18-task p{margin:6px 0}.cp18-task small{display:block;color:#bfd5e7;line-height:1.45}
+.cp18-theme .cp17-main h3{font-size:1.05rem}
