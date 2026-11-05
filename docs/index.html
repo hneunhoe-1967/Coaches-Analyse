@@ -310,6 +310,16 @@ select:disabled{opacity:.55}
     <div id="csv-preview" hidden><p id="csv-summary"></p><div class="admin-table"><table><thead><tr><th>Spieler</th><th>Spiele</th><th>Punkte</th><th>Assists</th><th>Rebounds</th><th>Rekonstruktionen</th></tr></thead><tbody id="csv-players"></tbody></table></div><label class="csv-confirm"><input id="csv-confirm" type="checkbox"> Ich habe Mannschaft, Saison, Datenstand und die rekonstruierten Werte anhand der Quelle geprüft.</label><button type="button" id="csv-save">Geprüfte Spieler lokal übernehmen</button></div>
     <p class="admin-state" id="csv-status" role="status"></p>
   </div>
+<!-- COACHES_TEAMSTAT_V3519 -->
+<div class="csv-import-box" id="teamstat-v3519" style="margin-top:1rem">
+<h3>ProB Süd · Teamstatistik-Sammelimport (15 Mannschaften)</h3>
+<p>Aktualisiert ausschließlich Teamstatistiken und speichert die gegnerischen Summen separat. Spielerstatistiken, Spielanalysen und Coach-Ziele bleiben unverändert. Zuvor vollständigen Datenbestand als JSON sichern.</p>
+<div class="bulk-controls"><label>Teamstatistik-JSON <input type="file" id="teamstat-file-v3519" accept=".json,application/json"></label><button type="button" id="teamstat-check-v3519">15 Teamstatistiken prüfen</button></div>
+<div id="teamstat-preview-v3519" hidden></div>
+<label class="bulk-check"><input type="checkbox" id="teamstat-confirm-v3519"> Ich habe alle Ergebnisse und die 11 nicht zuordenbaren Ludwigsburger Spielerpunkte geprüft und möchte die 15 Teamstatistiken lokal aktualisieren.</label>
+<div class="bulk-controls"><button id="teamstat-save-v3519" type="button" disabled>Geprüfte Teamstatistiken lokal speichern</button><span id="teamstat-result-v3519" role="status" aria-live="polite"></span></div>
+<p><small>Die globale Tabelle, Spieler-, Kader- und Scouting-Analysedaten werden nicht überschrieben. Die Gegnerwerte werden zunächst nur für künftige Erweiterungen gespeichert.</small></p>
+</div>
 <div class="csv-import-box" id="bulk-import-box">
   <h3>ProB Süd · CSV-Sammelimport</h3>
   <p>Mehrere offizielle Statistikdateien auswählen, jede Datei ausdrücklich einer Mannschaft zuordnen und alle Datensätze vor der lokalen Übernahme gemeinsam prüfen. Keine automatische Zuordnung nach Dateinamen.</p>
@@ -1187,5 +1197,6 @@ if(sessionStorage.getItem('coach-unlocked')==='1')activate();
 
 <link rel="stylesheet" href="coach-prep-v3518.css">
 <script src="coach-prep-v3518.js"></script>
+<script src="teamstat-import-v3519.js"></script>
 </body>
 </html>

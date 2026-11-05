@@ -1,0 +1,16 @@
+VERSION 3.5.19 – PROB SÜD TEAMSTATISTIK-SAMMELIMPORT
+
+1. Vollständigen JSON-Datenbestand der Web-App sichern.
+2. ZIP in .github/workflows hochladen.
+3. Befehle im Codespace:
+   unzip -o .github/workflows/Coaches-Analyse-v3-5-19-Teamstatistik-Import.zip
+   python scripts/install_v3519.py
+   node --check docs/teamstat-import-v3519.js
+   python tests/test_v3519.py
+4. Veröffentlichen: git add -A; git commit -m "Coaches-Analyse 3.5.19 Teamstatistik-Sammelimport"; git pull --rebase origin main; git push origin main
+5. Web-App aktualisieren, Reiter Daten öffnen, im NEUEN Teamstatistik-Sammelimport die Datei teamstat-probs-15.json wählen.
+6. Erst "15 Teamstatistiken prüfen" anklicken, Ergebnisse kontrollieren, Häkchen setzen, speichern.
+
+WICHTIG: Diese JSON-Datei NICHT als vollständigen Datenbestand importieren. Nur neue Importfunktion nutzen.
+In Ludwigsburg bleiben elf Punkte nicht einem Spieler zugeordnet, Teamstatistik selbst ist korrekt.
+Das Globale Datenstand-Feld und Tabellenergebnisse bleiben unverändert: Teamstatistikstand wird je Mannschaft im Datensatz hinterlegt.
