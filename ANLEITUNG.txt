@@ -1,20 +1,15 @@
-Coaches-Analyse 3.5.17
+Coaches-Analyse 3.5.21: ProB-Süd-Tabelle (Stand 01.11.2026)
 
 1. ZIP nach .github/workflows hochladen.
-2. Entpacken und installieren:
-   unzip -o .github/workflows/Coaches-Analyse-v3-5-17-Coach-Vorbereitung.zip
-   python scripts/install_v3517.py
-3. Pruefen:
-   node --check docs/game-analysis-v3516.js
-   node --check docs/coach-prep-v3517.js
-   python tests/test_v3517.py
-4. Auf GitHub veroeffentlichen:
-   git add -A
-   git commit -m "Coaches-Analyse 3.5.17 Coach Spielvorbereitung"
-   git pull --rebase origin main
-   git push origin main
-5. Test in der Web-App: BBC Coburg gegen FC Bayern Basketball II; Coach-Reiter.
-   Analyse des letzten Spiels muss zuerst geschlossen sein. Coach-Spielvorbereitung
-   darunter zeigt Matchup-Prioritaeten und den Bezug zu Teamaufgaben des letzten Spiels.
+2. unzip -o .github/workflows/Coaches-Analyse-v3-5-21-Tabelle.zip
+3. python scripts/install_v3521.py
+4. node --check docs/probs-table-import-v3521.js
+5. python tests/test_v3521.py
+6. git add -A && git commit -m "Coaches-Analyse 3.5.21 Tabelle ProB Sued" && git pull --rebase origin main && git push origin main
+7. App neu laden; unter Daten erst vollständige Sicherung exportieren.
+8. Im neuen Tabellenimport docs/probs-table-2026-11-01.json auswählen, prüfen und bestätigen.
 
-Es werden keine lokal gespeicherten Daten, Spielanalysen oder Coach-Ziele geloescht.
+Quelle: https://www.zweite-basketball-bundesliga.de/tabelle-prob-sued/
+Abgerufen/Tabellenstand 01.11.2026 19:52 Uhr.
+Die zugängliche www.2basketballbundesliga.de/tabelle-prob-sued/ liefert in der Textfassung unvollständige/alte Werte.
+Tabelle bleibt auf 01.11.2026 datiert; Spielplan und Spielergebnisse werden bewusst NICHT geändert.
