@@ -1,0 +1,12 @@
+ZIP nach .github/workflows/ hochladen und im Codespace-Root ausführen:
+
+unzip -o .github/workflows/Coaches-Analyse-v3-5-20-Minuten-und-Tabelle.zip
+python scripts/install_v3520.py
+node --check docs/fixes-v3520.js
+python tests/test_v3520.py
+git add -A
+git commit -m "Coaches-Analyse 3.5.20 Minutenanzeige und Tabellenhinweis"
+git pull --rebase origin main
+git push origin main
+
+Anschließend Safari-Seite neu laden. Lokale Daten bleiben erhalten.
