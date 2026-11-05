@@ -1,30 +1,20 @@
-COACHES-ANALYSE 3.5.15 – AUFKLAPPBARER SCOUTING-REPORT
+Coaches-Analyse 3.5.17
 
-1. ZIP in GitHub Codespaces in .github/workflows hochladen.
-2. Im Hauptordner ausfuehren:
+1. ZIP nach .github/workflows hochladen.
+2. Entpacken und installieren:
+   unzip -o .github/workflows/Coaches-Analyse-v3-5-17-Coach-Vorbereitung.zip
+   python scripts/install_v3517.py
+3. Pruefen:
+   node --check docs/game-analysis-v3516.js
+   node --check docs/coach-prep-v3517.js
+   python tests/test_v3517.py
+4. Auf GitHub veroeffentlichen:
+   git add -A
+   git commit -m "Coaches-Analyse 3.5.17 Coach Spielvorbereitung"
+   git pull --rebase origin main
+   git push origin main
+5. Test in der Web-App: BBC Coburg gegen FC Bayern Basketball II; Coach-Reiter.
+   Analyse des letzten Spiels muss zuerst geschlossen sein. Coach-Spielvorbereitung
+   darunter zeigt Matchup-Prioritaeten und den Bezug zu Teamaufgaben des letzten Spiels.
 
-unzip -o .github/workflows/Coaches-Analyse-v3-5-15-Report-Akkordeon.zip
-python scripts/install_v3515.py
-node --check docs/game-analysis-v3515-view.js
-node --check docs/pdf-export-v3512.js
-python tests/test_v3515.py
-
-git add -A
-git commit -m "Coaches-Analyse 3.5.15 Scouting-Report Uebersicht"
-git pull --rebase origin main
-git push origin main
-
-TESTEN:
-Spiel: BBC Coburg als eigene Mannschaft, Bayern Muenchen II als Gegner.
-Report: Zwei eingeklappte Ueberschriften:
-- Zusammenfassung vorliegender Spielanalysen
-- Analyse letztes Spiel
-
-Die Zusammenfassung gruppiert Aufgaben nach Themen und Spieler, mit Zahl der
-betroffenen importierten Spiele. Die letzte Analyse wird nach Datum gewaehlt.
-Im PDF werden alle Inhalte automatisch aufgeklappt.
-
-WICHTIG:
-- Keine Daten werden geloescht oder ueberschrieben.
-- Lokale Spielanalysen bleiben im Browser gespeichert.
-- Die Einordnung nach Themen ist regelbasiert, keine statistische Trendanalyse.
+Es werden keine lokal gespeicherten Daten, Spielanalysen oder Coach-Ziele geloescht.

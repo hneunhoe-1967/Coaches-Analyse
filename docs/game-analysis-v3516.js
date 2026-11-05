@@ -16,7 +16,7 @@ function renderCoach(){
  const id=own();if(!id){pane.innerHTML='<h2>Analyse des letzten Spiels</h2><p>Bitte zuerst im Reiter „Spiel“ die eigene Mannschaft auswählen.</p>';return;}
  const latest=items(id)[0];if(!latest){pane.innerHTML=`<h2>Analyse des letzten Spiels</h2><p>Für ${esc(teamName(id))} wurde noch keine Spielanalyse importiert. Import im Reiter „Daten“ möglich.</p>`;return;}
  const selectedId=pane.dataset.analysisId||'';const opened=new Set([...pane.querySelectorAll('.ga16-task[open]')].map(x=>x.querySelector('summary')?.textContent));
- pane.innerHTML=`<h2>Analyse des letzten Spiels</h2><p class="ga16-intro">Rückblick auf das jüngste <b>importierte</b> Spiel von ${esc(teamName(id))}. Die nächsten Gegnerdaten und Coach-Ziele bleiben in ihren bisherigen Ansichten verfügbar.</p>${detail(latest)}<p class="ga16-footer">Weitere Spielanalysen: Reiter „Daten“ → Archiv der Spielanalysen.</p>`;
+ pane.innerHTML=`<details class="ga17-collapse"><summary>Analyse des letzten Spiels · ${esc(latest.date||"Datum unbekannt")} · ${esc(latest.opponent||"Gegner unbekannt")}</summary><div class="ga17-collapse-body"><p class="ga16-intro">Rückblick auf das jüngste <b>importierte</b> Spiel von ${esc(teamName(id))}. Die nächsten Gegnerdaten und Coach-Ziele bleiben in ihren bisherigen Ansichten verfügbar.</p>${detail(latest)}<p class="ga16-footer">Weitere Spielanalysen: Reiter „Daten“ → Archiv der Spielanalysen.</p></div></details>`;
  pane.dataset.analysisId=latest.id||'';
  if(selectedId===pane.dataset.analysisId)pane.querySelectorAll('.ga16-task').forEach(x=>{if(opened.has(x.querySelector('summary')?.textContent))x.open=true;});
 }
@@ -31,7 +31,7 @@ function archive(){
 }
 function refresh(){// Do not touch the legacy Scouting Report or official dataset.
  $('scout-content')?.querySelector('#ga14-report')?.remove();
- renderCoach();archive();
+ renderCoach();archive();root.CoachPrep3517?.render?.();
 }
 function init(){
  // Intercept the legacy hook used by the import feature and PDF export.

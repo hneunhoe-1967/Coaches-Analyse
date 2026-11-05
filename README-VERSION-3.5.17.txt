@@ -1,0 +1,1 @@
+V3.5.17 – Coach: letzte Spielanalyse zunächst geschlossen, dunkler hellblauer Akzent. Neue Coach-Spielvorbereitung kombiniert bestehende Scouting-Modell-Prioritäten mit passenden Teamaufgaben des letzten Spiels. Daten/Analysen/Coach-Ziele bleiben unberührt. Kein automatisches Update offizieller Basketballstatistiken.
