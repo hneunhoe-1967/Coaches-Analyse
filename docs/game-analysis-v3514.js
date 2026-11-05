@@ -17,13 +17,9 @@ function save(x){x=validate(x);const a=read(),ix=a.findIndex(z=>z.id===x.id);if(
 function current(){try{return {own:String(state?.own||''),opp:String(state?.opp||''),teams:DATA?.teams||{}};}catch{return {own:'',opp:'',teams:{}};}}
 function taskRow(t,player){return `<li><strong>${player?esc(t.player)+' · ':''}${esc(t.title)}</strong><p>${esc(t.action)}</p>${t.evidence?`<small><b>Begründung aus dem Rückblick:</b> ${esc(t.evidence)}</small>`:''}${t.measure?`<small><b>Kontrolle:</b> ${esc(t.measure)}</small>`:''}</li>`;}
 function appendToReport(){
- const target=el('scout-content');if(!target)return;
- target.querySelector('#ga14-report')?.remove();const c=current();if(!c.own||!c.opp||!target.querySelector('.scout-header'))return;
- const items=read().filter(a=>a.teamId===c.own);if(!items.length)return;
- const box=document.createElement('section');box.id='ga14-report';box.className='ga14-report';
- box.innerHTML=`<h2>Team- und Spieleraufgaben aus Spielanalysen · Version 3.5.14</h2><p class="ga14-note">Rückblick auf frühere Spiele von <b>${esc(c.teams[c.own]?.n||'eigene Mannschaft')}</b>. <b>Keine neuen offiziellen Statistikdaten und keine direkte Analyse des aktuell gewählten Gegners.</b></p>`+
- items.map(a=>`<article class="ga14-review"><h3>${esc(a.title)}</h3><p class="ga14-meta">${esc(a.date)} · gegen ${esc(a.opponent)} · ${esc(a.score)} · Quelle: ${esc(a.sourceFile)}</p><p>${esc(a.summary)}</p>${a.teamTasks.length?`<h4>Aufgaben für das Team</h4><ol>${a.teamTasks.map(x=>taskRow(x,false)).join('')}</ol>`:''}${a.playerTasks.length?`<h4>Aufgaben für einzelne Spieler</h4><ol>${a.playerTasks.map(x=>taskRow(x,true)).join('')}</ol>`:''}<p class="ga14-note">${esc(a.status)}</p></article>`).join('');
- target.appendChild(box);
+ // v3.5.16: report no longer includes past game analyses.
+ document.getElementById('scout-content')?.querySelector('#ga14-report')?.remove();
+ root.CoachGameAnalysis3516?.refresh?.();
 }
 function refreshList(){const box=el('ga14-list');if(!box)return;const a=read();box.innerHTML=a.length?a.map(x=>`<div class="ga14-entry"><div><b>${esc(x.title)}</b><small>${esc(x.teamName||x.teamId)} · ${esc(x.date)} · ${x.teamTasks.length} Team-, ${x.playerTasks.length} Spieleraufgaben</small></div><button type="button" data-delete="${esc(x.id)}">Löschen</button></div>`).join(''):'<p>Noch keine Spielanalysen importiert.</p>';box.querySelectorAll('[data-delete]').forEach(btn=>btn.addEventListener('click',()=>{if(!confirm('Diese Analyse und ihre Aufgaben löschen?'))return;localStorage.setItem(KEY,JSON.stringify(read().filter(x=>x.id!==btn.dataset.delete)));refreshList();appendToReport();}));}
 function teamSelect(){const sel=el('ga14-team');if(!sel)return;const c=current(),old=sel.value||c.own,entries=Object.entries(c.teams).sort((a,b)=>a[1].n.localeCompare(b[1].n,'de'));sel.innerHTML='<option value="">Mannschaft zuordnen</option>'+entries.map(([id,x])=>`<option value="${esc(id)}">${esc(x.n)}</option>`).join('');if(entries.some(x=>x[0]===old))sel.value=old;}
@@ -64,7 +60,7 @@ function init(){const host=el('data-admin')||el('h34-manage');if(!host||el('ga14
  for(const id of ['league','own'])el(id)?.addEventListener('change',()=>setTimeout(teamSelect,0));
  el('ga14-file').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const count=await upload(f);refreshList();appendToReport();el('ga14-status').textContent=`${count} Analyse(n) gespeichert. Aufgaben bitte vor Verwendung prüfen.`;}catch(err){el('ga14-status').textContent='Fehler: '+err.message;}e.target.value='';});
  el('ga14-backup').addEventListener('click',backup);
- const sc=el('scout-content');if(sc)new MutationObserver(()=>{if(!sc.querySelector('#ga14-report'))appendToReport();}).observe(sc,{childList:true});
+ const sc=el('scout-content');if(sc)new MutationObserver(()=>{/* v3.5.16: handled by Coach archive and last-game view */}).observe(sc,{childList:true});
  ['own','opp','league'].forEach(id=>el(id)?.addEventListener('change',()=>setTimeout(appendToReport,30)));
  appendToReport();
 }

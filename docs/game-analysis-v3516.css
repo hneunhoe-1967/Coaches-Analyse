@@ -1,0 +1,14 @@
+/* Coaches-Analyse 3.5.16: Coach = last game; Data = archive. */
+.ga16-panel{margin:18px 0;padding:17px;background:#fff;border:1px solid #c8d6e3;border-radius:12px;color:#172c40}
+.ga16-panel h2{font-size:1.4rem;margin:0 0 12px;color:#173d61}
+.ga16-panel h3{margin:17px 0 8px}.ga16-panel h4{margin:17px 0 8px}
+.ga16-intro,.ga16-note,.ga16-meta,.ga16-footer{font-size:.88rem;color:#526779;line-height:1.5}
+.ga16-meta{font-weight:700}.ga16-abstract{line-height:1.55;white-space:pre-wrap}
+.ga16-task{border:1px solid #cdd9e5;border-radius:9px;margin:8px 0;background:#fff;overflow:hidden}
+.ga16-task>summary{padding:12px 14px;cursor:pointer;font-weight:650;background:#f1f5f9;list-style:none;display:list-item;list-style-position:inside}
+.ga16-task>summary::-webkit-details-marker{display:none}
+.ga16-task>summary:before{content:'▸';color:#2d668e;margin-right:10px}
+.ga16-task[open]>summary:before{content:'▾'}
+.ga16-task-body{padding:10px 14px;line-height:1.5}.ga16-task-body p{margin:5px 0 9px}
+.ga16-select{display:block;width:100%;max-width:700px;padding:10px;margin:7px 0 13px;border:1px solid #b1c2d2;border-radius:7px;background:#fff;color:#172c40}
+@media(max-width:600px){.ga16-panel{padding:11px}.ga16-task>summary{padding:11px}}
