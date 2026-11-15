@@ -1,15 +1,20 @@
-Coaches-Analyse 3.5.21: ProB-Süd-Tabelle (Stand 01.11.2026)
+Coaches-Analyse 3.5.22 — Tabellenimport ProB Süd
 
-1. ZIP nach .github/workflows hochladen.
-2. unzip -o .github/workflows/Coaches-Analyse-v3-5-21-Tabelle.zip
-3. python scripts/install_v3521.py
-4. node --check docs/probs-table-import-v3521.js
-5. python tests/test_v3521.py
-6. git add -A && git commit -m "Coaches-Analyse 3.5.21 Tabelle ProB Sued" && git pull --rebase origin main && git push origin main
-7. App neu laden; unter Daten erst vollständige Sicherung exportieren.
-8. Im neuen Tabellenimport docs/probs-table-2026-11-01.json auswählen, prüfen und bestätigen.
+1. ZIP nach .github/workflows/ hochladen.
+2. In Codespaces:
+   rm -f .github/workflows/Coaches-Analyse-v3-5-21-Tabelle.zip
+   unzip -o .github/workflows/Coaches-Analyse-v3-5-22-Tabelle.zip
+   python scripts/install_v3522.py
+   node --check docs/probs-table-import-v3522.js
+   python tests/test_v3522.py
+   git add -A
+   git commit -m "Coaches-Analyse 3.5.22 Tabelle ProB Sued"
+   git pull --rebase origin main
+   git push origin main
 
-Quelle: https://www.zweite-basketball-bundesliga.de/tabelle-prob-sued/
-Abgerufen/Tabellenstand 01.11.2026 19:52 Uhr.
-Die zugängliche www.2basketballbundesliga.de/tabelle-prob-sued/ liefert in der Textfassung unvollständige/alte Werte.
-Tabelle bleibt auf 01.11.2026 datiert; Spielplan und Spielergebnisse werden bewusst NICHT geändert.
+3. In der App Datenexport/Sicherung anfertigen.
+4. Daten > ProB Süd > Tabelle aktualisieren: docs/probs-table-2026-11-15.json auswählen.
+5. Prüfen, bestätigen, speichern.
+
+Die Tabellen-JSON enthält 15 Zeilen, Spielzahlen 8–9. Teamstatistiken, Spieler, Spielplan und Analysen bleiben unverändert. Divergierende Spielzahlen werden in der Prüfung markiert. Bei gleicher Spielanzahl müssen Tabellen- und Team-Punkte übereinstimmen.
+Datumsangabe: 15.11.2026 ist das Bereitstellungs-/Erfassungsdatum, kein unabhängig bestätigter offizieller Tabellenstand.
