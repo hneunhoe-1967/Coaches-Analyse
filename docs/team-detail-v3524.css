@@ -1,0 +1,32 @@
+/* Coaches-Analyse v3.5.23 – detail view below standings */
+.tdv-team-link{background:transparent;border:0;padding:.3rem 0;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;font:inherit;text-align:left}
+.tdv-team-link:hover,.tdv-team-link:focus-visible{color:var(--own);outline-offset:3px}
+.tdv-team-link[aria-expanded="true"]{font-weight:700;color:var(--own)}
+.team-detail-v3523{margin-top:1.5rem;padding:1.15rem;border:1px solid var(--line-strong);border-radius:14px;background:var(--surface);color:var(--ink)}
+.team-detail-v3523[hidden]{display:none!important}
+.tdv-top,.tdv-header{display:flex;justify-content:space-between;align-items:start;gap:1rem;flex-wrap:wrap}
+.tdv-top h3{margin:0 0 .25rem;font-size:1.4rem}
+.tdv-muted{color:var(--muted);font-size:.86rem;line-height:1.5}
+.tdv-close,.tdv-toggle button{border:1px solid var(--line-strong);border-radius:7px;background:transparent;color:var(--ink);padding:.45rem .8rem;cursor:pointer;font:inherit}
+.tdv-toggle{display:flex;gap:.25rem;align-items:center}
+.tdv-toggle button[aria-pressed="true"]{background:var(--own);color:white}
+.tdv-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.65rem;margin:1rem 0}
+.tdv-summary span{display:flex;flex-direction:column;gap:.2rem;background:var(--bg);padding:.75rem;border-radius:8px;font-size:1.2rem;font-weight:700}
+.tdv-summary b{color:var(--muted);font-size:.78rem;font-weight:600}
+.tdv-warning,.tdv-good{padding:.8rem 1rem;border-radius:8px;margin:.8rem 0;font-size:.9rem}
+.tdv-warning{border-left:4px solid #dc8e30;background:rgba(220,142,48,.1)}
+.tdv-good{border-left:4px solid #31866a;background:rgba(49,134,106,.08)}
+.tdv-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.2rem 0}
+.tdv-two h4,.tdv-header h4{margin:.3rem 0 .6rem;font-size:1.07rem}
+.tdv-scroll{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:8px}
+.tdv-data{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.82rem}
+.tdv-data th,.tdv-data td{padding:.52rem .62rem;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.tdv-data th:first-child{text-align:left}.tdv-data thead th{font-weight:700;background:var(--bg)}
+.tdv-data tbody tr:last-child>*{border-bottom:0}
+.tdv-players{width:max-content;min-width:100%}.tdv-players th:nth-child(2){position:sticky;left:0;background:var(--surface);text-align:left;z-index:1}
+.tdv-players thead th:nth-child(2){background:var(--bg);z-index:2}
+.tdv-official{color:var(--own);font-weight:650}
+@media(max-width:780px){.tdv-two{grid-template-columns:1fr}.tdv-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.team-detail-v3523{padding:.8rem}}
+
+/* Full-width, third grid row below the schedule and standings */
+#overview > .team-detail-v3523{grid-column:1/-1;width:100%;box-sizing:border-box}

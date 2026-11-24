@@ -1,25 +1,18 @@
-Coaches-Analyse 3.5.23 – Vollständige Teamübersicht direkt unter der ProB-Süd-Tabelle
+Coaches-Analyse 3.5.24 – Teamansicht unter der Tabelle
 
-1. ZIP in den Ordner .github/workflows/ hochladen (oder .github, falls dieser wie zuletzt verwendet wird).
-2. Im Codespaces-Terminal, vom Repository-Hauptverzeichnis aus:
+ZIP nach .github/workflows/ hochladen. In Codespaces:
 
-unzip -o .github/workflows/Coaches-Analyse-v3-5-23-Teamuebersicht.zip
-python scripts/install_v3523.py
-node --check docs/team-detail-v3523.js
-python tests/test_v3523.py
+cd /workspaces/Coaches-Analyse
+unzip -o .github/workflows/Coaches-Analyse-v3-5-24-Teamansicht-Fix.zip
+python scripts/install_v3524.py
+node --check docs/team-detail-v3524.js
+python tests/test_v3524.py
 
 git add -A
-git commit -m "Coaches-Analyse 3.5.23 vollständige Teamübersicht"
+git commit -m "Coaches-Analyse 3.5.24 Teamansicht repariert"
 git pull --rebase origin main
 git push origin main
 
-Wenn das ZIP direkt unter .github liegt, beim unzip-Befehl statt .github/workflows/ bitte .github/ angeben.
-
-In der App unter Übersicht auf einen Mannschaftsnamen in der ProB-Süd-Tabelle tippen.
-Unter der Tabelle erscheinen: Kontrollanzeige, Teamstatistiken Gesamt/pro Spiel,
-Gegnerstatistiken, alle Spieler und deren Saisonstatistiken (Gesamt/pro Einsatz),
-Datenstände und Link auf die offizielle Team-Kader-Seite.
-
-WICHTIG: Eine gleichlautende Spielanzahl/Punktzahl ist keine Online-Synchronisation.
-Das Paket importiert keine Daten, ändert keine lokal gespeicherten Datensätze und überschreibt keine Coach-Analysen.
-Hinweis: Die Tabelle bleibt lokal gespeichert; Angaben zur Aktualität müssen vom Anwender mit der offiziellen Seite verglichen werden.
+App in Safari neu laden, Reiter Übersicht öffnen, BBC Coburg antippen.
+Die Übersicht mit allen Statistiken erscheint unter dem Tabellen- und Spielplanbereich.
+Es werden keine lokalen Statistikdaten verändert.
