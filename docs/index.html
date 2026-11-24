@@ -280,7 +280,7 @@ select:disabled{opacity:.55}
 <div id="app-shell" hidden>
 <div class="wrap"><section class="panel-strip" aria-label="Datenspeicher und Import">
   <strong>Lokaler Datenspeicher</strong><span id="local-stat" role="status">Lade …</span>
-  <button id="local-sync" type="button">Veröffentlichte Daten prüfen &amp; lokal aktualisieren</button>
+  <button id="local-sync" type="button">Veröffentlichten Stand prüfen (ohne Import)</button>
   <button id="central-start" type="button" disabled title="Erst nach Freigabe und Backend-Konfiguration möglich">Neue Online-Erfassung anstoßen</button>
   <button id="export-json" type="button">Daten exportieren</button>
   <label style="cursor:pointer">Vollständigen Datenbestand importieren (JSON) <input id="import-json" type="file" accept=".json,application/json" hidden></label>
@@ -355,7 +355,7 @@ select:disabled{opacity:.55}
     <div class="brand">
       <h1>Coaches-Analyse</h1>
       <p>Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p>
-      <p class="proto"><span id="datenstand">Daten werden geladen …</span><button id="refresh" class="refresh" type="button" disabled>Aktualisieren</button></p>
+      <p class="proto"><span id="datenstand">Daten werden geladen …</span><button id="refresh" class="refresh" type="button" disabled>Quellstand prüfen</button></p>
       <p class="sync" id="sync" role="status" aria-live="polite"></p>
     </div>
     <div class="setup">
@@ -832,7 +832,7 @@ function uebernehmen(d){
   if (state.league && !LEAGUES[state.league]) { state.league = null; state.own = null; state.opp = null; }
   if (state.own && !TEAMS[state.own]) { state.own = null; state.opp = null; }
   if (state.opp && !TEAMS[state.opp]) state.opp = null;
-  $('datenstand').textContent = `Datenstand: ${fmtZeit(d.stand)}`;
+  $('datenstand').textContent = `Basisdatei: ${fmtZeit(d.stand)} · Importstände unter „Daten“ prüfen`;
   $('league').disabled = false;
   $('refresh').disabled = false;
   fussnoten(); renderOwnSelect(); render();
@@ -936,38 +936,26 @@ function backupCoachDataset(data){
  setTimeout(()=>URL.revokeObjectURL(url),10000);
 }
 async function syncDataset(){
- const b=$('local-sync');b.disabled=true;try{
-  $('local-info').textContent='Prüfe veröffentlichte JSON-Datei …';
-  const d=await ladeDaten(true);const count=validateDataset(d);
-  const current=await localGet('dataset');
-  if(current&&Date.parse(d.stand)<Date.parse(current.stand))throw new Error('Die veröffentlichte Version ist älter als die lokale Version. Keine Überschreibung.');
-  // Keep any locally imported roster and its provenance. Refuse outdated or incompatible rosters only by explicit manual review, never silent deletion.
-  let retained=0;
-  if(current){
-   for(const [id,oldTeam] of Object.entries(current.teams||{})){
-    const oldRows=current.spieler?.[id];
-    if(!d.teams[id] || !Array.isArray(oldRows) || !oldRows.length)continue;
-    if(!oldTeam.kaderStand && !oldTeam.importQuelle)continue;
-    d.spieler[id]=structuredClone(oldRows);
-    for(const key of ['kaderStand','kaderGeladen','importQuelle','synthetic']){
-     if(Object.prototype.hasOwnProperty.call(oldTeam,key))d.teams[id][key]=oldTeam[key];
-    }
-    retained++;
-   }
-  }
-  validateDataset(d);
-  // COACHES_V332_CHECK: never silently drop already saved player rosters.
-  if(current){
-   const vanished=Object.keys(current.teams||{}).filter(id=>
-    Array.isArray(current.spieler?.[id]) && current.spieler[id].length > 0 &&
-    (!Array.isArray(d.spieler?.[id]) || d.spieler[id].length===0));
-   if(vanished.length)throw new Error('Aktualisierung abgebrochen: '+vanished.length+' vorhandene Kader würden verloren gehen. Bitte Daten sichern und prüfen.');
-   backupCoachDataset(current);
-  }
-  await localPut('dataset',d);uebernehmen(d);renderAdmin();
-  $('local-stat').textContent=`${count} Teams · lokal: ${fmtZeit(d.stand)}`;
-  $('local-info').textContent=(current&&current.stand===d.stand?'Kein neuerer veröffentlichter Datenstand.':'Veröffentlichte Teamdaten wurden lokal gespeichert.')+' '+retained+' lokal importierte Mannschaftskader beibehalten. Hinweis: Bei unterschiedlichen Datenständen Spieler- und Teamstatistik prüfen.';
- }catch(e){$('local-info').textContent='Aktualisierung fehlgeschlagen: '+e.message;}finally{b.disabled=false;}
+  const btn=$('local-sync'),refresh=$('refresh');
+  btn.disabled=true;refresh.disabled=true;
+  try{
+    $('local-info').textContent='Veröffentlichten Datenstand prüfen (nur lesen) …';
+    const [remote,current]=await Promise.all([ladeDaten(true),localGet('dataset')]);
+    validateDataset(remote);
+    const localCob=current?.teamstat?.['559'];
+    const remoteCob=remote.teamstat?.['559'];
+    const localPlayers=Object.keys(current?.spieler||{}).filter(id=>
+      current.teams?.[id]?.l==='probs'&&Array.isArray(current.spieler[id])&&current.spieler[id].length).length;
+    const msg='Veröffentlichte Basis: '+fmtZeit(remote.stand)+
+      ' (Coburg '+(remoteCob?.[0]??'–')+' Spiele). Lokal: '+
+      (current?'Coburg '+(localCob?.[0]??'–')+' Spiele, '+localPlayers+'/15 ProB-Süd-Kader.':'kein Datensatz.')+
+      ' Es wurden KEINE lokalen Daten ersetzt. Für neue Werte bitte Dateien unter „Daten“ ausdrücklich importieren.';
+    $('local-info').textContent=msg;
+    $('sync').textContent=msg;
+  }catch(e){
+    const msg='Nur-Lese-Prüfung fehlgeschlagen: '+e.message+'. Lokale Daten unverändert.';
+    $('local-info').textContent=msg;$('sync').textContent=msg;
+  }finally{btn.disabled=false;refresh.disabled=false;}
 }
 window.coachesLocalSync=syncDataset;
 $('local-sync').addEventListener('click',syncDataset);
@@ -1212,5 +1200,7 @@ if(sessionStorage.getItem('coach-unlocked')==='1')activate();
 <script src="probs-table-import-v3522.js"></script>
 <link rel="stylesheet" href="team-detail-v3524.css">
 <script src="team-detail-v3524.js"></script>
+<link rel="stylesheet" href="data-audit-v36.css">
+<script src="data-audit-v36.js"></script>
 </body>
 </html>

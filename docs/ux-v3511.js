@@ -23,7 +23,7 @@ function init(){
   const tab=document.querySelector('.h35-tab[data-tab="spiel"]');tab?.click();
   status.textContent='Aktuelle Auswahl und Anzeigen geleert. Importierte Daten und gespeicherte Ziele bleiben erhalten.';
  });
- const report=$('h35-report-actions');if(report){const title=report.querySelector('strong');if(title)title.textContent='Report · Version 3.5.11';const sub=report.querySelector('p');if(sub)sub.textContent='Spielprognose, Scouting-Report, Spielerrollen und Gameplan.';}
+ const report=$('h35-report-actions');if(report){const title=report.querySelector('strong');if(title)title.textContent='Report · Version 3.6';const sub=report.querySelector('p');if(sub)sub.textContent='Spielprognose, Scouting-Report, Spielerrollen und Gameplan.';}
  const detail=$('h34-detail');if(detail){const t=detail.querySelector('summary');if(t)t.textContent='Direkter Vergleich und Top-Listen';}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();

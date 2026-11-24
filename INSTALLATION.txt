@@ -1,18 +1,25 @@
-Coaches-Analyse 3.5.24 – Teamansicht unter der Tabelle
+COACHES-ANALYSE 3.6 – DATENSCHUTZ / LOKALE DATENKONTROLLE
 
-ZIP nach .github/workflows/ hochladen. In Codespaces:
+WICHTIG: Vorher in Safari NICHT „Aktualisieren“ bzw. „Veröffentlichte Daten prüfen & lokal aktualisieren“ drücken.
+Falls bereits alte Werte angezeigt werden: Die Installation allein stellt verlorene lokale Importe NICHT wieder her.
+Suche in Safari-Downloads nach coaches-analyse-backup-vor-aktualisierung.json oder coaches-analyse-daten.json.
+
+ZIP in GitHub Codespaces nach .github/workflows/ hochladen.
 
 cd /workspaces/Coaches-Analyse
-unzip -o .github/workflows/Coaches-Analyse-v3-5-24-Teamansicht-Fix.zip
-python scripts/install_v3524.py
-node --check docs/team-detail-v3524.js
-python tests/test_v3524.py
-
+unzip -o .github/workflows/Coaches-Analyse-v3-6-Datenschutz-und-Pruefung.zip
+python scripts/install_v36.py
+node --check docs/data-audit-v36.js
+python tests/test_v36.py
 git add -A
-git commit -m "Coaches-Analyse 3.5.24 Teamansicht repariert"
+git commit -m "Coaches-Analyse 3.6 Datenkontrolle und geschuetztes Aktualisieren"
 git pull --rebase origin main
 git push origin main
 
-App in Safari neu laden, Reiter Übersicht öffnen, BBC Coburg antippen.
-Die Übersicht mit allen Statistiken erscheint unter dem Tabellen- und Spielplanbereich.
-Es werden keine lokalen Statistikdaten verändert.
+Dann Safari-App neu laden, Reiter Daten, Abschnitt Datenprüfung Version 3.6, "15 ProB-Süd-Teams prüfen".
+
+Die Datenprüfung schreibt nichts. Das Quellstand-Prüfen schreibt nichts.
+Für eine Wiederherstellung zuerst aktuellen Datenbestand sichern (Daten exportieren), dann eine vertrauenswürdige vollständig exportierte JSON-Datei über "Vollständigen Datenbestand importieren" auswählen.
+Nicht mit der Teamstatistik-JSON verwechseln; die Wiederherstellungsdatei enthält ligen, teams, teamstat, spieler, spiele, stand.
+
+Nach Wiedereinspielen von Backup Datenprüfung erneut durchführen. Alte Basis 23.10.2026 bleibt im Repository; lokale Importe sind nicht auf GitHub veröffentlicht.

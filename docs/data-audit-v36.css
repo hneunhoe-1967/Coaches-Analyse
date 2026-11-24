@@ -1,0 +1,13 @@
+/* Coaches-Analyse 3.6 - source-status audit */
+.v36-audit{border:1px solid var(--line-strong);border-radius:12px;padding:1.1rem;margin:1.3rem 0;background:var(--surface)}
+.v36-audit h3{margin:.15rem 0 .4rem}
+.v36-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin:1rem 0}
+.v36-actions button{border:1px solid var(--line-strong);background:var(--bg);padding:.6rem 1rem;border-radius:8px;cursor:pointer}
+.v36-audit p{line-height:1.55}.v36-help{font-size:.86rem;color:var(--muted)}
+.v36-warn{border-left:4px solid #b8782c;padding:.75rem;background:rgba(184,120,44,.13)}
+.v36-good{border-left:4px solid #30836a;padding:.75rem;background:rgba(48,131,106,.12)}
+.v36-scroll{overflow-x:auto;max-width:100%;border:1px solid var(--line);border-radius:7px}
+.v36-scroll table{border-collapse:collapse;width:100%;font-size:.8rem;min-width:960px}
+.v36-scroll th,.v36-scroll td{padding:.45rem .55rem;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.v36-scroll th:nth-child(2){text-align:left}.v36-scroll thead{background:var(--bg)}
+.v36-bad{background:rgba(184,120,44,.12)}

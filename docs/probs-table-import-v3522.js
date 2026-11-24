@@ -49,9 +49,9 @@ save.addEventListener('click',async()=>{
   const current=await localGet('dataset');validate(staged,current);
   const copy=structuredClone(current);
   copy.ligen.probs.table=staged.rows.map(r=>r.slice());
-  copy.ligen.probs.tableStand='Nutzervorlage vom 15.11.2026 (offizieller Stand nicht verifiziert)';
+  copy.ligen.probs.tableStand=String(staged.stand)+' (Importdatei)';
   copy.ligen.probs.tableUrl=staged.source;
-  copy.ligen.probs.note='Tabelle vom Nutzer bereitgestellt; Spielplan, Ergebnisse und Teamstatistiken separat, teils noch älter.';
+  copy.ligen.probs.note='Tabellenimport aus Datei; Spielplan und Ergebnisse separat. Offiziellen Stand über die Quelle prüfen.';
   copy.ligen.probs.tableImportStand=staged.stand;
   validateDataset(copy);
   await localPut('dataset',copy);

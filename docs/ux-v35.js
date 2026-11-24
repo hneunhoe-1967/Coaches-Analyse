@@ -18,13 +18,13 @@ function ensureHero(){
   const h34=q('h34-hero');
   if(h34){
     h34.classList.add('h35-hero');
-    const ver=qs('.h34-version',h34); if(ver) ver.textContent='Version 3.5.11 · Vergleich · Report · Coach-Ziele';
+    const ver=qs('.h34-version',h34); if(ver) ver.textContent='Version 3.6 · Vergleich · Report · Teamprüfung';
     return h34;
   }
   if(q('h35-hero')) return q('h35-hero');
   const wrap=document.createElement('section');
   wrap.id='h35-hero'; wrap.className='h35-hero'; wrap.setAttribute('aria-label','Henriks Analyse-App für Coaches');
-  wrap.innerHTML=`<div class="h35-copy"><div class="h35-kicker">Basketball · Daten · Scouting</div><h1>Henriks <span>Analyse-App</span> für Coaches</h1><p>Aktuell: Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p><p class="h35-version">Version 3.5.11 · Vergleich · Report · Coach-Ziele</p></div><div class="h35-art" role="img" aria-label="Basketball, Taktik und Statistiken"></div>`;
+  wrap.innerHTML=`<div class="h35-copy"><div class="h35-kicker">Basketball · Daten · Scouting</div><h1>Henriks <span>Analyse-App</span> für Coaches</h1><p>Aktuell: Gegner-Scouting für die BARMER 2. Basketball Bundesliga</p><p class="h35-version">Version 3.6 · Vergleich · Report · Teamprüfung</p></div><div class="h35-art" role="img" aria-label="Basketball, Taktik und Statistiken"></div>`;
   shell.insertBefore(wrap,shell.firstChild);
   return wrap;
 }
