@@ -1,12 +1,25 @@
-ZIP nach .github/workflows/ hochladen und im Codespace-Root ausführen:
+Coaches-Analyse 3.5.23 – Vollständige Teamübersicht direkt unter der ProB-Süd-Tabelle
 
-unzip -o .github/workflows/Coaches-Analyse-v3-5-20-Minuten-und-Tabelle.zip
-python scripts/install_v3520.py
-node --check docs/fixes-v3520.js
-python tests/test_v3520.py
+1. ZIP in den Ordner .github/workflows/ hochladen (oder .github, falls dieser wie zuletzt verwendet wird).
+2. Im Codespaces-Terminal, vom Repository-Hauptverzeichnis aus:
+
+unzip -o .github/workflows/Coaches-Analyse-v3-5-23-Teamuebersicht.zip
+python scripts/install_v3523.py
+node --check docs/team-detail-v3523.js
+python tests/test_v3523.py
+
 git add -A
-git commit -m "Coaches-Analyse 3.5.20 Minutenanzeige und Tabellenhinweis"
+git commit -m "Coaches-Analyse 3.5.23 vollständige Teamübersicht"
 git pull --rebase origin main
 git push origin main
 
-Anschließend Safari-Seite neu laden. Lokale Daten bleiben erhalten.
+Wenn das ZIP direkt unter .github liegt, beim unzip-Befehl statt .github/workflows/ bitte .github/ angeben.
+
+In der App unter Übersicht auf einen Mannschaftsnamen in der ProB-Süd-Tabelle tippen.
+Unter der Tabelle erscheinen: Kontrollanzeige, Teamstatistiken Gesamt/pro Spiel,
+Gegnerstatistiken, alle Spieler und deren Saisonstatistiken (Gesamt/pro Einsatz),
+Datenstände und Link auf die offizielle Team-Kader-Seite.
+
+WICHTIG: Eine gleichlautende Spielanzahl/Punktzahl ist keine Online-Synchronisation.
+Das Paket importiert keine Daten, ändert keine lokal gespeicherten Datensätze und überschreibt keine Coach-Analysen.
+Hinweis: Die Tabelle bleibt lokal gespeichert; Angaben zur Aktualität müssen vom Anwender mit der offiziellen Seite verglichen werden.
